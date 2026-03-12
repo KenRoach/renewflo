@@ -4,6 +4,7 @@ import { Icon } from "@/components/icons";
 import { Badge, Card, MetricCard, SectionHeader, StatusDot } from "@/components/ui";
 import { useAssetMetrics } from "@/hooks";
 import { urgencyColor, statusLabel } from "@/utils";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Asset, PageId } from "@/types";
 
 interface DashboardPageProps {
@@ -13,7 +14,9 @@ interface DashboardPageProps {
 
 export const DashboardPage: FC<DashboardPageProps> = ({ setPage, assets }) => {
   const { colors } = useTheme();
+  const { user } = useAuth();
   const metrics = useAssetMetrics(assets);
+  const firstName = user?.fullName?.split(" ")[0] ?? "Partner";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -21,7 +24,7 @@ export const DashboardPage: FC<DashboardPageProps> = ({ setPage, assets }) => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <h2 style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: 0 }}>
-            Good morning, Partner
+            Good morning, {firstName}
           </h2>
           <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
             Portfolio summary &middot; March 2026 &middot; {metrics.totalDevices} devices tracked

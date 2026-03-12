@@ -1,5 +1,7 @@
+import { randomUUID } from 'node:crypto';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import rateLimit from '@fastify/rate-limit';
 import multipart from '@fastify/multipart';
 import { config } from './config.js';
 import authPlugin from './plugins/auth.js';
@@ -15,9 +17,10 @@ import { orgRoutes } from './routes/orgs.routes.js';
 import { userRoutes } from './routes/users.routes.js';
 import { chatRoutes } from './routes/chat.routes.js';
 
-const app = Fastify({ logger: true });
+const app = Fastify({ logger: true, genReqId: () => randomUUID() });
 
-await app.register(cors, { origin: true });
+await app.register(cors, { origin: config.ALLOWED_ORIGINS.split(',').map((o) => o.trim()) });
+await app.register(rateLimit, { max: 100, timeWindow: '1 minute' });
 await app.register(multipart, { limits: { fileSize: 10 * 1024 * 1024 } });
 await app.register(errorHandler);
 await app.register(authPlugin);

@@ -1,6 +1,6 @@
-import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { PartnerSidebar } from './components/PartnerSidebar';
+import './partner.css';
 
 export function PartnerLayout() {
   return (

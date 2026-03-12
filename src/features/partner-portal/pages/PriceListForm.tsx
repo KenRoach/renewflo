@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { priceListApi } from '../services/partner.api';
 
@@ -9,10 +9,10 @@ export function PriceListForm() {
   const [form, setForm] = useState({ brand: '', model_pattern: '', coverage_type: 'tpm' as 'tpm' | 'oem', duration_months: 12, unit_price: 0, valid_from: new Date().toISOString().split('T')[0], valid_until: '' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  useEffect(() => { if (isEdit) priceListApi.list().then((r) => { const e = r.data.find((x) => x.id === id); if (e) setForm({ brand: e.brand, model_pattern: e.model_pattern, coverage_type: e.coverage_type, duration_months: e.duration_months, unit_price: e.unit_price, valid_from: e.valid_from, valid_until: e.valid_until }); }); }, [id, isEdit]);
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => { if (isEdit) priceListApi.list().then((r) => { const e = r.data.find((x) => x.id === id); if (e) setForm({ brand: e.brand, model_pattern: e.model_pattern, coverage_type: e.coverage_type, duration_months: e.duration_months, unit_price: e.unit_price, valid_from: e.valid_from ?? '', valid_until: e.valid_until ?? '' }); }); }, [id, isEdit]);
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault(); setSubmitting(true); setError(null);
-    try { if (isEdit) await priceListApi.update(id!, form); else await priceListApi.create(form); navigate('/partner/price-lists'); }
+    try { const payload = { ...form, valid_from: form.valid_from ?? '', valid_until: form.valid_until ?? '' }; if (isEdit) await priceListApi.update(id!, payload); else await priceListApi.create(payload); navigate('/partner/price-lists'); }
     catch (err) { setError((err as Error).message); setSubmitting(false); }
   };
   const update = (field: string, value: any) => setForm((p) => ({ ...p, [field]: value }));

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePartnerOrderDetail } from '../hooks/usePartnerOrders';
 import { useEntitlementSubmit, type EntitlementEntry } from '../hooks/useEntitlements';
@@ -17,7 +17,7 @@ export function EntitlementForm() {
     </div>
   );
   const lineItems = order.order_line_item ?? [];
-  const updateEntry = (assetId: string, field: keyof EntitlementEntry, value: string) => setEntries((p) => ({ ...p, [assetId]: { ...p[assetId], assetId, [field]: value } }));
+  const updateEntry = (assetId: string, field: keyof EntitlementEntry, value: string) => setEntries((p) => ({ ...p, [assetId]: { assetId, entitlementId: '', coverageStart: '', coverageEnd: '', ...p[assetId], [field]: value } }));
   const handleSubmit = async () => { const ents = Object.values(entries).filter((e) => e.entitlementId && e.coverageStart && e.coverageEnd); if (ents.length > 0) await submit(ents); };
   return (
     <div className="entitlement-form"><h1>Enter Entitlements</h1><p>Enter entitlement ID and coverage dates for each line item.</p>

@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ThemeContext, LIGHT, DARK, FONT } from "@/theme";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { Sidebar } from "@/components/layout";
 import { DashboardPage } from "@/features/dashboard";
 import { QuoterPage } from "@/features/quoter";
@@ -10,20 +11,51 @@ import { SupportLogsPage } from "@/features/support";
 import { RewardsPage } from "@/features/rewards";
 import { OrdersPage } from "@/features/orders";
 import { ChatPanel } from "@/features/chat";
-import { INBOX_DATA } from "@/data/seeds";
+import { LoginPage, SignupPage } from "@/features/auth";
+import { PartnerRouter } from "@/features/partner-portal";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import type { Asset, PageId } from "@/types";
 import { useAssetStore } from "@/stores";
 
-export default function App() {
-  const [isDark, setIsDark] = useState(false);
+function AuthGate() {
+  const { isAuthenticated, isLoading, org } = useAuth();
+  const [authView, setAuthView] = useState<"login" | "signup">("login");
+
+  if (isLoading) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
+        Loading...
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return authView === "login" ? (
+      <LoginPage onSwitchToSignup={() => setAuthView("signup")} />
+    ) : (
+      <SignupPage onSwitchToLogin={() => setAuthView("login")} />
+    );
+  }
+
+  if (org?.type === "delivery_partner") {
+    return <PartnerRouter orgType="delivery_partner" />;
+  }
+
+  return <MainApp />;
+}
+
+function MainApp() {
   const [page, setPage] = useState<PageId>("dashboard");
   const [chatOpen, setChatOpen] = useState(false);
 
   const assets = useAssetStore((s) => s.assets);
   const addAssets = useAssetStore((s) => s.addAssets);
+  const fetchAssets = useAssetStore((s) => s.fetchAssets);
 
-  const colors = isDark ? DARK : LIGHT;
-  const unread = INBOX_DATA.filter((m) => m.unread).length;
+  useEffect(() => {
+    fetchAssets();
+  }, [fetchAssets]);
+
   const alerts = assets.filter((a) => a.daysLeft <= 30 && a.daysLeft >= 0).length;
 
   const handleImport = (newAssets: Asset[] | null) => {
@@ -58,36 +90,48 @@ export default function App() {
   };
 
   return (
+    <>
+      <Sidebar
+        activePage={page}
+        onNavigate={setPage}
+        chatOpen={chatOpen}
+        onToggleChat={() => setChatOpen((o) => !o)}
+        unreadCount={0}
+        alertCount={alerts}
+      />
+      <ChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+      <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>{renderPage()}</div>
+    </>
+  );
+}
+
+export default function App() {
+  const [isDark, setIsDark] = useState(false);
+  const colors = isDark ? DARK : LIGHT;
+
+  return (
     <ThemeContext.Provider value={{ colors, isDark, toggle: () => setIsDark((d) => !d) }}>
-      <div
-        style={{
-          display: "flex",
-          height: "100vh",
-          background: colors.bg,
-          fontFamily: FONT,
-          color: colors.text,
-          overflow: "hidden",
-          transition: "background 0.3s ease",
-        }}
-      >
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-
-        <Sidebar
-          activePage={page}
-          onNavigate={setPage}
-          chatOpen={chatOpen}
-          onToggleChat={() => setChatOpen((o) => !o)}
-          unreadCount={unread}
-          alertCount={alerts}
-        />
-
-        <ChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
-
-        <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>{renderPage()}</div>
-      </div>
+      <AuthProvider>
+        <div
+          style={{
+            display: "flex",
+            height: "100vh",
+            background: colors.bg,
+            fontFamily: FONT,
+            color: colors.text,
+            overflow: "hidden",
+            transition: "background 0.3s ease",
+          }}
+        >
+          <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+          />
+          <ErrorBoundary>
+            <AuthGate />
+          </ErrorBoundary>
+        </div>
+      </AuthProvider>
     </ThemeContext.Provider>
   );
 }

@@ -1,4 +1,3 @@
-import React from 'react';
 
 interface PartnerKpiCardProps { title: string; value: string | number; subtitle?: string; variant?: 'default' | 'warning' | 'success'; }
 

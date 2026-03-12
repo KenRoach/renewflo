@@ -7,6 +7,18 @@ import { adminClient } from '../supabase.js';
 import { BadRequestError } from '../lib/errors.js';
 
 export async function userRoutes(app: FastifyInstance) {
+  app.get('/me', async (request, reply) => {
+    const { data: profile } = await adminClient
+      .from('core_user')
+      .select('org_id, role, full_name, core_organization!inner(name, type)')
+      .eq('id', request.user.id)
+      .single();
+    return reply.send({
+      user: { id: request.user.id, email: request.user.email, fullName: profile?.full_name, role: profile?.role },
+      org: { id: profile?.org_id, name: (profile as any)?.core_organization?.name, type: (profile as any)?.core_organization?.type },
+    });
+  });
+
   app.get('/', async (request, reply) => {
     requireRole('admin')(request);
     if (request.user.orgType === 'operator') return reply.send(await usersRepository.listAll());

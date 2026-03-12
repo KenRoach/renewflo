@@ -1,13 +1,21 @@
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { useTheme, MONO, FONT } from "@/theme";
 import { Icon } from "@/components/icons";
 import { Badge, Card, Pill, SectionHeader } from "@/components/ui";
-import { PURCHASE_ORDERS } from "@/data/seeds";
+import { ordersApi, type OrderSummary } from "@/services/orders.api";
 import type { POStatus } from "@/types";
 
 export const OrdersPage: FC = () => {
   const { colors } = useTheme();
   const [filter, setFilter] = useState<"all" | POStatus>("all");
+  const [orders, setOrders] = useState<OrderSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    ordersApi.list().then((res) => { setOrders(res.data); setLoading(false); }).catch(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div style={{ padding: 40, textAlign: "center", color: colors.textMid }}>Loading orders...</div>;
 
   const statusColor = (s: POStatus) =>
     ({
@@ -32,10 +40,10 @@ export const OrdersPage: FC = () => {
     })[s] ?? s;
 
   const filtered =
-    filter === "all" ? PURCHASE_ORDERS : PURCHASE_ORDERS.filter((po) => po.status === filter);
+    filter === "all" ? orders : orders.filter((po) => po.status === filter);
 
-  const totalValue = PURCHASE_ORDERS.reduce((s, po) => s + po.total, 0);
-  const activeCount = PURCHASE_ORDERS.filter(
+  const totalValue = orders.reduce((s, po) => s + po.total, 0);
+  const activeCount = orders.filter(
     (po) => po.status !== "fulfilled" && po.status !== "cancelled",
   ).length;
 
@@ -107,35 +115,23 @@ export const OrdersPage: FC = () => {
                 width: 40,
                 height: 40,
                 borderRadius: 10,
-                background: `${statusColor(po.status)}12`,
+                background: `${statusColor(po.status as POStatus)}12`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Icon name="order" size={18} color={statusColor(po.status)} />
+              <Icon name="order" size={18} color={statusColor(po.status as POStatus)} />
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>{po.id}</span>
-                <Badge color={statusColor(po.status)}>{statusLabel(po.status)}</Badge>
-                {po.vendorPO && (
-                  <span style={{ fontSize: 11, color: colors.textMid, fontFamily: MONO }}>
-                    Vendor: {po.vendorPO}
-                  </span>
-                )}
+                <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>{po.id.slice(0, 8)}</span>
+                <Badge color={statusColor(po.status as POStatus)}>{statusLabel(po.status as POStatus)}</Badge>
               </div>
-              <div style={{ fontSize: 13, color: colors.text }}>{po.client}</div>
               <div style={{ fontSize: 12, color: colors.textMid, marginTop: 2 }}>
-                {po.items.length} line item{po.items.length !== 1 ? "s" : ""} &middot; Quote{" "}
-                {po.quoteRef} &middot;{" "}
-                {po.items.map((i) => `${i.brand} ${i.model}`).join(", ")}
+                {po.line_item_count} line item{po.line_item_count !== 1 ? "s" : ""}
+                {po.partner_name && <> &middot; Partner: {po.partner_name}</>}
               </div>
-              {po.deliveryPartner && (
-                <div style={{ fontSize: 11, color: colors.accent, marginTop: 2, fontWeight: 500 }}>
-                  Routed to: {po.deliveryPartner}
-                </div>
-              )}
             </div>
             <div style={{ textAlign: "right" }}>
               <div
@@ -143,7 +139,7 @@ export const OrdersPage: FC = () => {
               >
                 ${po.total.toLocaleString()}
               </div>
-              <div style={{ fontSize: 11, color: colors.textMid }}>{po.updated}</div>
+              <div style={{ fontSize: 11, color: colors.textMid }}>{new Date(po.updated_at).toLocaleDateString()}</div>
             </div>
           </Card>
         ))}
@@ -171,8 +167,8 @@ export const OrdersPage: FC = () => {
               { stage: "Fulfilled", status: "fulfilled" as POStatus, color: colors.accent },
             ] as const
           ).map((s, i) => {
-            const count = PURCHASE_ORDERS.filter((po) => po.status === s.status).length;
-            const value = PURCHASE_ORDERS.filter((po) => po.status === s.status).reduce(
+            const count = orders.filter((po) => po.status === s.status).length;
+            const value = orders.filter((po) => po.status === s.status).reduce(
               (sum, po) => sum + po.total,
               0,
             );

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { PartnerKpiCard } from '../components/PartnerKpiCard';
 import { usePartnerDashboard } from '../hooks/usePartnerDashboard';

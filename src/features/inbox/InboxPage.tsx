@@ -1,14 +1,22 @@
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { useTheme } from "@/theme";
 import { Icon } from "@/components/icons";
 import { Badge, Card } from "@/components/ui";
-import { INBOX_DATA } from "@/data/seeds";
+import { notificationsApi, type Notification } from "@/services/notifications.api";
 
 export const InboxPage: FC = () => {
   const { colors } = useTheme();
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const unreadCount = INBOX_DATA.filter((m) => m.unread).length;
+  useEffect(() => {
+    notificationsApi.list().then((res) => { setNotifications(res.data); setLoading(false); }).catch(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div style={{ padding: 40, textAlign: "center", color: colors.textMid }}>Loading notifications...</div>;
+
+  const unreadCount = notifications.filter((m) => !m.read).length;
 
   return (
     <div>
@@ -30,17 +38,17 @@ export const InboxPage: FC = () => {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {INBOX_DATA.map((m) => (
+        {notifications.map((n) => (
           <Card
-            key={m.id}
-            onClick={() => setSelectedId(selectedId === m.id ? null : m.id)}
+            key={n.id}
+            onClick={() => setSelectedId(selectedId === n.id ? null : n.id)}
             style={{
               display: "flex",
               alignItems: "center",
               gap: 12,
               padding: "14px 16px",
-              background: m.unread ? `${colors.accent}06` : colors.card,
-              border: `1px solid ${m.unread ? colors.accent + "25" : colors.border}`,
+              background: !n.read ? `${colors.accent}06` : colors.card,
+              border: `1px solid ${!n.read ? colors.accent + "25" : colors.border}`,
               cursor: "pointer",
             }}
           >
@@ -62,24 +70,23 @@ export const InboxPage: FC = () => {
                 <span
                   style={{
                     fontSize: 13,
-                    fontWeight: m.unread ? 600 : 400,
+                    fontWeight: !n.read ? 600 : 400,
                     color: colors.text,
                   }}
                 >
-                  {m.from}
+                  {n.type}
                 </span>
-                <span style={{ fontSize: 11, color: colors.textMid }}>{m.time}</span>
+                <span style={{ fontSize: 11, color: colors.textMid }}>{new Date(n.created_at).toLocaleDateString()}</span>
               </div>
-              <div style={{ fontSize: 12, color: colors.textMid }}>{m.company}</div>
               <div
                 style={{
                   fontSize: 12,
-                  fontWeight: m.unread ? 500 : 400,
-                  color: m.unread ? colors.text : colors.textMid,
+                  fontWeight: !n.read ? 500 : 400,
+                  color: !n.read ? colors.text : colors.textMid,
                   marginTop: 2,
                 }}
               >
-                {m.subject}
+                {n.title}
               </div>
               <div
                 style={{
@@ -91,10 +98,10 @@ export const InboxPage: FC = () => {
                   textOverflow: "ellipsis",
                 }}
               >
-                {m.preview}
+                {n.body}
               </div>
             </div>
-            {m.unread && (
+            {!n.read && (
               <div
                 style={{
                   width: 8,
@@ -107,6 +114,11 @@ export const InboxPage: FC = () => {
             )}
           </Card>
         ))}
+        {notifications.length === 0 && (
+          <Card style={{ textAlign: "center", padding: 40 }}>
+            <div style={{ fontSize: 14, color: colors.textMid }}>No notifications yet.</div>
+          </Card>
+        )}
       </div>
     </div>
   );

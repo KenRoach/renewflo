@@ -6,6 +6,7 @@ const envSchema = z.object({
   SUPABASE_ANON_KEY: z.string().min(1),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   ANTHROPIC_API_KEY: z.string().min(1),
+  ALLOWED_ORIGINS: z.string().default('http://localhost:3000'),
 });
 
 export const config = envSchema.parse(process.env);

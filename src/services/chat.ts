@@ -1,5 +1,7 @@
 import type { ChatMessage } from "@/types";
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api/v1";
+
 const SYSTEM_PROMPT = `You are RenewFlow AI — intelligent assistant for warranty renewal management in the LATAM IT channel. Help resellers manage installed base, generate TPM+OEM quotes, handle purchase orders, and send email alerts. Always present TPM first for Standard/Low-use (30-60% savings). OEM first for Critical. Communication is email-only. Max 200 words. Use emojis sparingly.`;
 
 export interface ChatService {
@@ -16,24 +18,25 @@ export function createChatService(): ChatService {
           content: m.text,
         }));
 
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(`${API_BASE}/chat/message`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
           messages: apiMessages,
+          system: SYSTEM_PROMPT,
         }),
       });
 
-      const data = await response.json();
-      const text = data.content
-        ?.filter((b: { type: string }) => b.type === "text")
-        .map((b: { text: string }) => b.text)
-        .join("\n");
+      if (!response.ok) {
+        return "Error processing response. Please try again.";
+      }
 
-      return text || "Error processing response. Please try again.";
+      const data = await response.json();
+      return data.content || "Error processing response. Please try again.";
     },
   };
 }

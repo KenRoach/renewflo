@@ -19,7 +19,7 @@ declare module 'fastify' {
 }
 
 async function authPlugin(app: FastifyInstance) {
-  app.decorateRequest('user', null);
+  app.decorateRequest('user', null as unknown as AuthUser);
 
   app.addHook('onRequest', async (request: FastifyRequest, _reply: FastifyReply) => {
     const publicPaths = ['/api/v1/auth/signup', '/api/v1/auth/login', '/api/v1/auth/forgot-password', '/health'];

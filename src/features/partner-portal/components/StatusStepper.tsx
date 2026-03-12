@@ -1,4 +1,3 @@
-import React from 'react';
 
 const PO_STEPS = ['submitted', 'under_review', 'approved', 'routed', 'acknowledged', 'entitlement_verified', 'completed'];
 

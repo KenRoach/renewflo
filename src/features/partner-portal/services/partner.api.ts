@@ -1,15 +1,4 @@
-const API_BASE = '/api/v1';
-
-async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const token = localStorage.getItem('access_token');
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...options?.headers },
-  });
-  if (!res.ok) { const error = await res.json().catch(() => ({ message: res.statusText })); throw new Error(error.message || `API error ${res.status}`); }
-  if (res.status === 204) return null as T;
-  return res.json();
-}
+import { apiFetch } from '@/services/api-client';
 
 export interface PartnerRfq { id: string; quoteId: string; status: string; sentAt: string; lineItemCount: number; anonymizedRef: string; }
 export interface PartnerPO { id: string; status: string; total: number; anonymizedRef: string; createdAt: string; lineItemCount: number; }
