@@ -2,20 +2,34 @@ import { useState, useEffect, type FC } from "react";
 import { useTheme, MONO, FONT } from "@/theme";
 import { Icon } from "@/components/icons";
 import { Badge, Card, Pill, SectionHeader } from "@/components/ui";
-import { ordersApi, type OrderSummary } from "@/services/orders.api";
-import type { POStatus } from "@/types";
+import { listOrders } from "@/services/api";
+import { PURCHASE_ORDERS } from "@/data/seeds";
+import type { PurchaseOrder, POStatus, UserRole } from "@/types";
 
-export const OrdersPage: FC = () => {
+interface OrdersPageProps {
+  userRole?: UserRole;
+}
+
+export const OrdersPage: FC<OrdersPageProps> = ({ userRole = "var" }) => {
   const { colors } = useTheme();
   const [filter, setFilter] = useState<"all" | POStatus>("all");
-  const [orders, setOrders] = useState<OrderSummary[]>([]);
+  const [orders, setOrders] = useState<PurchaseOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    ordersApi.list().then((res) => { setOrders(res.data); setLoading(false); }).catch(() => setLoading(false));
+    let cancelled = false;
+    setLoading(true);
+    listOrders()
+      .then((data) => {
+        if (!cancelled) {
+          const apiOrders = (data.orders || []) as PurchaseOrder[];
+          setOrders(apiOrders.length > 0 ? apiOrders : PURCHASE_ORDERS);
+        }
+      })
+      .catch(() => { if (!cancelled) setOrders(PURCHASE_ORDERS); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
-
-  if (loading) return <div style={{ padding: 40, textAlign: "center", color: colors.textMid }}>Loading orders...</div>;
 
   const statusColor = (s: POStatus) =>
     ({
@@ -39,6 +53,14 @@ export const OrdersPage: FC = () => {
       cancelled: "Cancelled",
     })[s] ?? s;
 
+  if (loading) {
+    return (
+      <div style={{ padding: 40, textAlign: "center", color: colors.textMid, fontSize: 14 }}>
+        Loading purchase orders...
+      </div>
+    );
+  }
+
   const filtered =
     filter === "all" ? orders : orders.filter((po) => po.status === filter);
 
@@ -59,31 +81,33 @@ export const OrdersPage: FC = () => {
       >
         <div>
           <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>
-            Purchase Orders
+            {userRole === "delivery-partner" ? "Assigned POs" : userRole === "support" ? "Purchase Orders" : "Purchase Orders"}
           </h2>
           <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
             {activeCount} active &middot; ${totalValue.toLocaleString()} total value
           </p>
         </div>
-        <button
-          style={{
-            background: colors.accent,
-            color: "#fff",
-            border: "none",
-            borderRadius: 9,
-            padding: "9px 18px",
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: "pointer",
-            fontFamily: FONT,
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            boxShadow: `0 2px 8px ${colors.accent}40`,
-          }}
-        >
-          <Icon name="plus" size={14} color="#fff" /> New PO
-        </button>
+        {userRole === "var" && (
+          <button
+            style={{
+              background: colors.accent,
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+              padding: "10px 20px",
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+              fontFamily: FONT,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              boxShadow: `0 2px 8px ${colors.accent}40`,
+            }}
+          >
+            <Icon name="plus" size={14} color="#fff" /> New PO
+          </button>
+        )}
       </div>
 
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
@@ -110,28 +134,28 @@ export const OrdersPage: FC = () => {
               cursor: "pointer",
             }}
           >
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 10,
-                background: `${statusColor(po.status as POStatus)}12`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Icon name="order" size={18} color={statusColor(po.status as POStatus)} />
-            </div>
+            <Icon name="order" size={18} color={statusColor(po.status)} />
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>{po.id.slice(0, 8)}</span>
-                <Badge color={statusColor(po.status as POStatus)}>{statusLabel(po.status as POStatus)}</Badge>
+                <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>{po.id}</span>
+                <Badge color={statusColor(po.status)}>{statusLabel(po.status)}</Badge>
+                {po.vendorPO && (
+                  <span style={{ fontSize: 11, color: colors.textMid, fontFamily: MONO }}>
+                    Vendor: {po.vendorPO}
+                  </span>
+                )}
               </div>
+              <div style={{ fontSize: 13, color: colors.text }}>{po.client}</div>
               <div style={{ fontSize: 12, color: colors.textMid, marginTop: 2 }}>
-                {po.line_item_count} line item{po.line_item_count !== 1 ? "s" : ""}
-                {po.partner_name && <> &middot; Partner: {po.partner_name}</>}
+                {po.items.length} line item{po.items.length !== 1 ? "s" : ""} &middot; Quote{" "}
+                {po.quoteRef} &middot;{" "}
+                {po.items.map((i) => `${i.brand} ${i.model}`).join(", ")}
               </div>
+              {po.deliveryPartner && (
+                <div style={{ fontSize: 11, color: colors.accent, marginTop: 2, fontWeight: 500 }}>
+                  Routed to: {po.deliveryPartner}
+                </div>
+              )}
             </div>
             <div style={{ textAlign: "right" }}>
               <div
@@ -139,7 +163,7 @@ export const OrdersPage: FC = () => {
               >
                 ${po.total.toLocaleString()}
               </div>
-              <div style={{ fontSize: 11, color: colors.textMid }}>{new Date(po.updated_at).toLocaleDateString()}</div>
+              <div style={{ fontSize: 11, color: colors.textMid }}>{po.updated}</div>
             </div>
           </Card>
         ))}

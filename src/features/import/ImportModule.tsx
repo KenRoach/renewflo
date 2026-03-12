@@ -152,17 +152,17 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
             onClick={downloadTemplate}
             style={{
               background: colors.card,
-              border: `1px solid ${colors.border}`,
-              borderRadius: 9,
-              padding: "8px 14px",
-              fontSize: 12,
-              fontWeight: 500,
               color: colors.text,
+              border: `1px solid ${colors.border}`,
+              borderRadius: 10,
+              padding: "10px 20px",
+              fontSize: 13,
+              fontWeight: 500,
               cursor: "pointer",
               fontFamily: FONT,
               display: "flex",
               alignItems: "center",
-              gap: 6,
+              gap: 8,
               boxShadow: colors.shadow,
             }}
           >
@@ -240,7 +240,26 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
             </p>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={reset} style={{ background: "transparent", border: `1px solid ${colors.border}`, borderRadius: 9, padding: "8px 14px", fontSize: 12, color: colors.textMid, cursor: "pointer", fontFamily: FONT }}>Back</button>
+            <button
+              onClick={reset}
+              style={{
+                background: colors.card,
+                color: colors.text,
+                border: `1px solid ${colors.border}`,
+                borderRadius: 10,
+                padding: "10px 20px",
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: "pointer",
+                fontFamily: FONT,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                boxShadow: colors.shadow,
+              }}
+            >
+              Back
+            </button>
             <button
               onClick={processMappedData}
               disabled={!ok}
@@ -248,12 +267,15 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
                 background: ok ? colors.accent : colors.textDim,
                 color: "#fff",
                 border: "none",
-                borderRadius: 9,
-                padding: "8px 18px",
+                borderRadius: 10,
+                padding: "10px 20px",
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: ok ? "pointer" : "not-allowed",
                 fontFamily: FONT,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
                 opacity: ok ? 1 : 0.6,
                 boxShadow: ok ? `0 2px 8px ${colors.accent}40` : "none",
               }}
@@ -345,23 +367,42 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
             </p>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
-            <button onClick={() => setStep("mapping")} style={{ background: "transparent", border: `1px solid ${colors.border}`, borderRadius: 9, padding: "8px 14px", fontSize: 12, color: colors.textMid, cursor: "pointer", fontFamily: FONT }}>Back</button>
+            <button
+              onClick={() => setStep("mapping")}
+              style={{
+                background: colors.card,
+                color: colors.text,
+                border: `1px solid ${colors.border}`,
+                borderRadius: 10,
+                padding: "10px 20px",
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: "pointer",
+                fontFamily: FONT,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                boxShadow: colors.shadow,
+              }}
+            >
+              Back
+            </button>
             <button
               onClick={() => { onImport(parsedAssets); setStep("done"); }}
               style={{
                 background: colors.accent,
                 color: "#fff",
                 border: "none",
-                borderRadius: 9,
-                padding: "9px 20px",
+                borderRadius: 10,
+                padding: "10px 20px",
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: "pointer",
                 fontFamily: FONT,
-                boxShadow: `0 2px 8px ${colors.accent}40`,
                 display: "flex",
                 alignItems: "center",
-                gap: 6,
+                gap: 8,
+                boxShadow: `0 2px 8px ${colors.accent}40`,
               }}
             >
               <Icon name="check" size={14} color="#fff" /> Import {parsedAssets.length} Assets
@@ -417,10 +458,43 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
         RenewFlow will track warranty expirations and send alerts automatically.
       </p>
       <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-        <button onClick={reset} style={{ background: "transparent", border: `1px solid ${colors.border}`, borderRadius: 9, padding: "9px 18px", fontSize: 13, color: colors.textMid, cursor: "pointer", fontFamily: FONT }}>Import More</button>
+        <button
+          onClick={reset}
+          style={{
+            background: colors.card,
+            color: colors.text,
+            border: `1px solid ${colors.border}`,
+            borderRadius: 10,
+            padding: "10px 20px",
+            fontSize: 13,
+            fontWeight: 500,
+            cursor: "pointer",
+            fontFamily: FONT,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            boxShadow: colors.shadow,
+          }}
+        >
+          Import More
+        </button>
         <button
           onClick={() => onImport(null)}
-          style={{ background: colors.accent, color: "#fff", border: "none", borderRadius: 9, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: FONT, boxShadow: `0 2px 8px ${colors.accent}40` }}
+          style={{
+            background: colors.accent,
+            color: "#fff",
+            border: "none",
+            borderRadius: 10,
+            padding: "10px 20px",
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: FONT,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            boxShadow: `0 2px 8px ${colors.accent}40`,
+          }}
         >
           Go to Dashboard
         </button>

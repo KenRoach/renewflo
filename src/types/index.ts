@@ -126,6 +126,33 @@ export interface ImportedAsset extends Asset {
 
 export type ColumnMapping = Record<string, number>;
 
+// ─── Auth Types ───
+
+export type UserRole = "var" | "support" | "delivery-partner";
+
+export const ROLE_LABELS: Record<UserRole, string> = {
+  var: "VAR Partner",
+  support: "Support Team",
+  "delivery-partner": "Delivery Partner",
+};
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  orgId: string;
+  role: UserRole;
+}
+
+export interface AuthTokenPayload {
+  token: string;
+  userId: string;
+  orgId: string;
+  name: string;
+  role: UserRole;
+  expiresIn: number;
+}
+
 // ─── Navigation ───
 
 export type PageId =
@@ -136,4 +163,5 @@ export type PageId =
   | "notifications"
   | "support"
   | "rewards"
-  | "orders";
+  | "orders"
+  | "pipeline";

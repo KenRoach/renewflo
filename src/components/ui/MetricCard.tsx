@@ -30,19 +30,7 @@ export const MetricCard: FC<MetricCardProps> = ({ label, value, sub, icon, color
         >
           {label}
         </span>
-        <div
-          style={{
-            width: 34,
-            height: 34,
-            borderRadius: 9,
-            background: `${c}12`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Icon name={icon} size={16} color={c} />
-        </div>
+        <Icon name={icon} size={16} color={c} />
       </div>
       <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
         <span

@@ -23,7 +23,9 @@ export type IconName =
   | "file"
   | "table"
   | "download"
-  | "mapping";
+  | "mapping"
+  | "pipeline"
+  | "close";
 
 interface IconProps {
   name: IconName;
@@ -63,6 +65,10 @@ const PATHS: Record<IconName, string> = {
   download: "M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z",
   mapping:
     "M17 3H7c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7V5h10v14zM8 7h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z",
+  pipeline:
+    "M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3",
+  close:
+    "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z",
 };
 
 export const Icon: FC<IconProps> = ({ name, size = 18, color }) => {

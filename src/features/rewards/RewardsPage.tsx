@@ -1,13 +1,40 @@
-import type { FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { useTheme, MONO } from "@/theme";
 import { Icon } from "@/components/icons";
 import { Card, SectionHeader } from "@/components/ui";
+import { getRewards } from "@/services/api";
 import { REWARDS_DATA } from "@/data/seeds";
+import type { RewardsProfile } from "@/types";
 
 export const RewardsPage: FC = () => {
   const { colors } = useTheme();
-  const r = REWARDS_DATA;
-  const progress = (r.points / r.nextAt) * 100;
+  const [r, setRewards] = useState<RewardsProfile>(REWARDS_DATA);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    getRewards()
+      .then((data) => {
+        if (!cancelled) {
+          const profile = data as unknown as RewardsProfile;
+          setRewards(profile && profile.points > 0 ? profile : REWARDS_DATA);
+        }
+      })
+      .catch(() => { if (!cancelled) setRewards(REWARDS_DATA); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const progress = r.nextAt > 0 ? (r.points / r.nextAt) * 100 : 0;
+
+  if (loading) {
+    return (
+      <div style={{ padding: 40, textAlign: "center", color: colors.textMid, fontSize: 14 }}>
+        Loading rewards...
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -56,6 +83,11 @@ export const RewardsPage: FC = () => {
 
       <Card>
         <SectionHeader title="Points History" />
+        {r.history.length === 0 && (
+          <div style={{ padding: 20, textAlign: "center", fontSize: 13, color: colors.textMid }}>
+            No points history yet. Start earning by closing renewals!
+          </div>
+        )}
         {r.history.map((h, i) => (
           <div
             key={i}
