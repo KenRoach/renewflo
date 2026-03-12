@@ -594,7 +594,7 @@ export const QuoterPage: FC<QuoterPageProps> = ({ assets }) => {
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <div>
-          <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>Quote Generator</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>Rapid Quote Generator</h2>
           <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
             {mode === "assets"
               ? "Select devices from your installed base"
