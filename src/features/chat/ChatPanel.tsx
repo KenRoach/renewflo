@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, type FC } from "react";
 import { useTheme, FONT } from "@/theme";
 import { Icon } from "@/components/icons";
+import { useLocale } from "@/i18n";
 import { createChatService } from "@/services";
 import type { ChatMessage } from "@/types";
 
@@ -13,8 +14,9 @@ const chatService = createChatService();
 
 export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose }) => {
   const { colors } = useTheme();
+  const { t } = useLocale();
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: "system", text: "RenewFlow AI connected. How can I help?" },
+    { role: "system", text: t.aiConnected },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,7 +37,7 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose }) => {
       const text = await chatService.sendMessage(messages, userMsg.text);
       setMessages((m) => [...m, { role: "ai", text }]);
     } catch {
-      setMessages((m) => [...m, { role: "ai", text: "Connection error." }]);
+      setMessages((m) => [...m, { role: "ai", text: t.connectionError }]);
     } finally {
       setLoading(false);
     }
@@ -116,7 +118,7 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose }) => {
         ))}
         {loading && (
           <div style={{ alignSelf: "flex-start", padding: "8px 12px", borderRadius: 10, background: colors.card, border: `1px solid ${colors.border}` }}>
-            <span style={{ fontSize: 12, color: colors.textMid }}>Thinking...</span>
+            <span style={{ fontSize: 12, color: colors.textMid }}>{t.thinking}</span>
           </div>
         )}
         <div ref={bottomRef} />
@@ -152,7 +154,7 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose }) => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder={loading ? "Waiting..." : "Message..."}
+          placeholder={loading ? t.waitingPlaceholder : t.messagePlaceholder}
           disabled={loading}
           style={{
             flex: 1,

@@ -6,3 +6,4 @@ export { SectionHeader } from "./SectionHeader";
 export { StatusDot } from "./StatusDot";
 export { ThemeToggle } from "./ThemeToggle";
 export { LanguageToggle } from "./LanguageToggle";
+export { HowItWorksModal } from "./HowItWorksModal";

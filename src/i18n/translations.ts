@@ -96,6 +96,12 @@ export interface Translations {
   quoteBuilder: string;
   // How it works
   howItWorks: string;
+  // Chat
+  aiConnected: string;
+  thinking: string;
+  messagePlaceholder: string;
+  waitingPlaceholder: string;
+  connectionError: string;
   // Common
   loading: string;
   darkMode: string;
@@ -177,6 +183,11 @@ export const translations: Record<Locale, Translations> = {
     partnerRewards: "Partner Rewards",
     quoteBuilder: "Quote Builder",
     howItWorks: "How does it work?",
+    aiConnected: "RenewFlow AI connected. How can I help?",
+    thinking: "Thinking...",
+    messagePlaceholder: "Message...",
+    waitingPlaceholder: "Waiting...",
+    connectionError: "Connection error. Please try again.",
     loading: "Loading...",
     darkMode: "Dark mode",
     lightMode: "Light mode",
@@ -255,6 +266,11 @@ export const translations: Record<Locale, Translations> = {
     partnerRewards: "Recompensas de Socios",
     quoteBuilder: "Creador de Cotizaciones",
     howItWorks: "¿Cómo funciona?",
+    aiConnected: "RenewFlow IA conectada. ¿En qué puedo ayudarte?",
+    thinking: "Pensando...",
+    messagePlaceholder: "Mensaje...",
+    waitingPlaceholder: "Esperando...",
+    connectionError: "Error de conexión. Inténtalo de nuevo.",
     loading: "Cargando...",
     darkMode: "Modo oscuro",
     lightMode: "Modo claro",
@@ -333,6 +349,11 @@ export const translations: Record<Locale, Translations> = {
     partnerRewards: "Recompensas de Parceiros",
     quoteBuilder: "Criador de Cotações",
     howItWorks: "Como funciona?",
+    aiConnected: "RenewFlow IA conectada. Como posso ajudar?",
+    thinking: "Pensando...",
+    messagePlaceholder: "Mensagem...",
+    waitingPlaceholder: "Aguardando...",
+    connectionError: "Erro de conexão. Tente novamente.",
     loading: "Carregando...",
     darkMode: "Modo escuro",
     lightMode: "Modo claro",

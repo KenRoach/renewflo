@@ -1,7 +1,7 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import { useTheme, FONT } from "@/theme";
 import { Icon, type IconName } from "@/components/icons";
-import { ThemeToggle, LanguageToggle } from "@/components/ui";
+import { ThemeToggle, LanguageToggle, HowItWorksModal } from "@/components/ui";
 import { useLocale } from "@/i18n";
 import type { PageId, UserRole } from "@/types";
 import { ROLE_LABELS } from "@/types";
@@ -98,6 +98,7 @@ export const Sidebar: FC<SidebarProps> = ({
 }) => {
   const { colors, isDark } = useTheme();
   const { t } = useLocale();
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   const initials = userName
     ? userName
@@ -230,7 +231,7 @@ export const Sidebar: FC<SidebarProps> = ({
         <div style={{ marginBottom: 6 }}>
           <button
             title={t.howItWorks}
-            onClick={() => window.alert(t.howItWorks)}
+            onClick={() => setShowHowItWorks(true)}
             style={{
               display: "flex",
               alignItems: "center",
@@ -344,6 +345,8 @@ export const Sidebar: FC<SidebarProps> = ({
           </button>
         )}
       </div>
+
+      <HowItWorksModal open={showHowItWorks} onClose={() => setShowHowItWorks(false)} />
     </div>
   );
 };
