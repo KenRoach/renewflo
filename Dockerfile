@@ -7,9 +7,10 @@ RUN npm ci
 
 COPY . .
 
-# Vite picks up VITE_* from environment during build
-ARG VITE_GATEWAY_URL
-ARG VITE_API_BASE_URL
+# Railway passes env vars as Docker build args
+# Vite reads VITE_* from environment at build time
+ARG VITE_GATEWAY_URL=https://api-production-dcc6.up.railway.app
+ARG VITE_API_BASE_URL=https://api-production-dcc6.up.railway.app/
 ENV VITE_GATEWAY_URL=$VITE_GATEWAY_URL
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
@@ -22,6 +23,5 @@ WORKDIR /app
 RUN npm install -g serve@14
 COPY --from=build /app/dist ./dist
 
-ENV PORT=8080
 EXPOSE 8080
-CMD ["sh", "-c", "serve -s dist -l $PORT"]
+CMD ["serve", "-s", "dist", "-l", "8080"]
