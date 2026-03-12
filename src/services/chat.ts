@@ -1,50 +1,74 @@
 import type { ChatMessage } from "@/types";
 
-const SYSTEM_PROMPT = `You are RenewFlow AI — intelligent assistant for warranty renewal management in the LATAM IT channel. Help resellers manage installed base, generate TPM+OEM quotes, handle purchase orders, and send email alerts. Always present TPM first for Standard/Low-use (30-60% savings). OEM first for Critical. Communication is email-only. Max 200 words. Use emojis sparingly.`;
+const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL || "http://localhost:4000";
+const TOKEN_KEY = "renewflow_token";
+const USER_KEY = "renewflow_user";
+
+function getToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+function getOrgId(): string {
+  try {
+    const user = JSON.parse(localStorage.getItem(USER_KEY) || "{}");
+    return user.orgId || "";
+  } catch {
+    return "";
+  }
+}
 
 export interface ChatService {
   sendMessage(history: ChatMessage[], userText: string): Promise<string>;
 }
 
-const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY || "";
-
 export function createChatService(): ChatService {
   return {
-    async sendMessage(history: ChatMessage[], userText: string): Promise<string> {
-      if (!API_KEY) {
-        return "AI chat is not configured. Set VITE_ANTHROPIC_API_KEY in your .env file.";
+    async sendMessage(
+      history: ChatMessage[],
+      userText: string,
+    ): Promise<string> {
+      const token = getToken();
+      if (!token) {
+        return "Please log in to use RenewFlow AI.";
       }
 
-      const apiMessages = [...history, { role: "user" as const, text: userText }]
+      const chatHistory = history
         .filter((m) => m.role !== "system")
-        .map((m) => ({
-          role: m.role === "ai" ? ("assistant" as const) : ("user" as const),
-          content: m.text,
-        }));
+        .slice(-10)
+        .map((m) => ({ role: m.role, text: m.text }));
 
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": API_KEY,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true",
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          system: SYSTEM_PROMPT,
-          messages: apiMessages,
-        }),
-      });
+      try {
+        const res = await fetch(`${GATEWAY_URL}/tool-calls`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            "x-org-id": getOrgId(),
+          },
+          body: JSON.stringify({
+            name: "ai_chat",
+            input: { message: userText, history: chatHistory },
+            riskLevel: "low",
+            requiredScopes: ["tools:invoke"],
+          }),
+        });
 
-      const data = await response.json();
-      const text = data.content
-        ?.filter((b: { type: string }) => b.type === "text")
-        .map((b: { text: string }) => b.text)
-        .join("\n");
+        if (res.status === 401) {
+          localStorage.removeItem(TOKEN_KEY);
+          localStorage.removeItem(USER_KEY);
+          window.dispatchEvent(new CustomEvent("renewflow:auth-expired"));
+          return "Session expired. Please log in again.";
+        }
 
-      return text || "Error processing response. Please try again.";
+        if (!res.ok) {
+          return "AI service is temporarily unavailable. Please try again.";
+        }
+
+        const data = await res.json();
+        return data.output?.reply || "Unable to process your request.";
+      } catch {
+        return "Cannot reach the AI service. Please check your connection.";
+      }
     },
   };
 }
