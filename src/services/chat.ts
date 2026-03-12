@@ -1,4 +1,4 @@
-import type { ChatMessage } from "@/types";
+import type { ChatContext, ChatMessage } from "@/types";
 
 const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL || "http://localhost:4000";
 const TOKEN_KEY = "renewflow_token";
@@ -18,7 +18,7 @@ function getOrgId(): string {
 }
 
 export interface ChatService {
-  sendMessage(history: ChatMessage[], userText: string): Promise<string>;
+  sendMessage(history: ChatMessage[], userText: string, context?: ChatContext): Promise<string>;
 }
 
 export function createChatService(): ChatService {
@@ -26,6 +26,7 @@ export function createChatService(): ChatService {
     async sendMessage(
       history: ChatMessage[],
       userText: string,
+      context?: ChatContext,
     ): Promise<string> {
       const token = getToken();
       if (!token) {
@@ -47,7 +48,7 @@ export function createChatService(): ChatService {
           },
           body: JSON.stringify({
             name: "ai_chat",
-            input: { message: userText, history: chatHistory },
+            input: { message: userText, history: chatHistory, context: context ?? null },
             riskLevel: "low",
             requiredScopes: ["tools:invoke"],
           }),

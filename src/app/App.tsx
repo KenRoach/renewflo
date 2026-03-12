@@ -18,6 +18,7 @@ import { LoginPage } from "@/features/auth";
 import { PageTransition } from "@/components/ui";
 import type { Asset, PageId, UserRole } from "@/types";
 import { useAssetStore, useAuthStore } from "@/stores";
+import { PURCHASE_ORDERS } from "@/data/seeds";
 
 const LOCALE_STORAGE_KEY = "renewflow_locale";
 
@@ -173,7 +174,15 @@ export default function App() {
             onLogout={logout}
           />
 
-          <ChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+          <ChatPanel
+            open={chatOpen}
+            onClose={() => setChatOpen(false)}
+            assets={assets}
+            user={user}
+            orders={PURCHASE_ORDERS}
+            currentPage={page}
+            locale={locale}
+          />
 
           <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
             <PageTransition pageKey={page}>{renderPage()}</PageTransition>

@@ -1,18 +1,25 @@
 import { useState, useRef, useEffect, type FC } from "react";
 import { useTheme, FONT } from "@/theme";
-import { Icon } from "@/components/icons";
 import { useLocale } from "@/i18n";
+import type { Locale } from "@/i18n";
+import { Icon } from "@/components/icons";
 import { createChatService } from "@/services";
-import type { ChatMessage } from "@/types";
+import { buildChatContext } from "@/utils";
+import type { Asset, AuthUser, ChatMessage, PageId, PurchaseOrder } from "@/types";
 
 interface ChatPanelProps {
   open: boolean;
   onClose: () => void;
+  assets: Asset[];
+  user: AuthUser;
+  orders: PurchaseOrder[];
+  currentPage: PageId;
+  locale: Locale;
 }
 
 const chatService = createChatService();
 
-export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose }) => {
+export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose, assets, user, orders, currentPage, locale }) => {
   const { colors } = useTheme();
   const { t } = useLocale();
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -34,7 +41,8 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose }) => {
     setLoading(true);
 
     try {
-      const text = await chatService.sendMessage(messages, userMsg.text);
+      const context = buildChatContext({ user, assets, orders, currentPage, locale });
+      const text = await chatService.sendMessage(messages, userMsg.text, context);
       setMessages((m) => [...m, { role: "ai", text }]);
     } catch {
       setMessages((m) => [...m, { role: "ai", text: t.connectionError }]);
@@ -42,6 +50,18 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose }) => {
       setLoading(false);
     }
   };
+
+  // Data-driven quick actions with real counts
+  const expiring30 = assets.filter((a) => a.daysLeft >= 0 && a.daysLeft <= 30).length;
+  const lapsedCount = assets.filter((a) => a.daysLeft < 0).length;
+  const criticalCount = assets.filter((a) => a.tier === "critical").length;
+
+  const quickActions = [
+    { label: t.quickExpiring.replace("{count}", String(expiring30)), prompt: t.promptExpiring },
+    { label: t.quickCritical.replace("{count}", String(criticalCount)), prompt: t.promptCritical },
+    { label: t.quickSummary, prompt: t.promptSummary },
+    { label: t.quickLapsed.replace("{count}", String(lapsedCount)), prompt: t.promptLapsed },
+  ];
 
   if (!open) return null;
 
@@ -127,10 +147,10 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose }) => {
       {/* Quick Actions */}
       {messages.length <= 2 && !loading && (
         <div style={{ display: "flex", gap: 4, padding: "0 12px 6px", flexWrap: "wrap" }}>
-          {["Quote expiring", "Critical devices", "Summary", "Lapsed"].map((c, i) => (
+          {quickActions.map((qa, i) => (
             <button
               key={i}
-              onClick={() => setInput(c)}
+              onClick={() => setInput(qa.prompt)}
               style={{
                 padding: "3px 8px",
                 borderRadius: 12,
@@ -142,7 +162,7 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose }) => {
                 fontFamily: FONT,
               }}
             >
-              {c}
+              {qa.label}
             </button>
           ))}
         </div>

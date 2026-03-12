@@ -107,6 +107,15 @@ export interface Translations {
   messagePlaceholder: string;
   waitingPlaceholder: string;
   connectionError: string;
+  // Chat quick actions
+  quickExpiring: string;
+  quickCritical: string;
+  quickSummary: string;
+  quickLapsed: string;
+  promptExpiring: string;
+  promptCritical: string;
+  promptSummary: string;
+  promptLapsed: string;
   // Settings
   settings: string;
   profileSettings: string;
@@ -237,6 +246,14 @@ export const translations: Record<Locale, Translations> = {
     messagePlaceholder: "Message...",
     waitingPlaceholder: "Waiting...",
     connectionError: "Connection error. Please try again.",
+    quickExpiring: "{count} expiring soon",
+    quickCritical: "{count} critical devices",
+    quickSummary: "Portfolio summary",
+    quickLapsed: "{count} lapsed",
+    promptExpiring: "Which warranties are expiring in the next 30 days?",
+    promptCritical: "Show me all critical tier devices and their status",
+    promptSummary: "Give me a summary of my portfolio — devices, savings, and alerts",
+    promptLapsed: "Which warranties have lapsed and need recovery?",
     settings: "Settings",
     profileSettings: "Profile Settings",
     companyInfo: "Company Information",
@@ -357,6 +374,14 @@ export const translations: Record<Locale, Translations> = {
     messagePlaceholder: "Mensaje...",
     waitingPlaceholder: "Esperando...",
     connectionError: "Error de conexión. Inténtalo de nuevo.",
+    quickExpiring: "{count} por vencer",
+    quickCritical: "{count} dispositivos críticos",
+    quickSummary: "Resumen del portafolio",
+    quickLapsed: "{count} vencidos",
+    promptExpiring: "¿Cuáles garantías vencen en los próximos 30 días?",
+    promptCritical: "Muéstrame todos los dispositivos de nivel crítico y su estado",
+    promptSummary: "Dame un resumen de mi portafolio — dispositivos, ahorros y alertas",
+    promptLapsed: "¿Cuáles garantías han vencido y necesitan recuperación?",
     settings: "Configuración",
     profileSettings: "Configuración de Perfil",
     companyInfo: "Información de la Empresa",
@@ -477,6 +502,14 @@ export const translations: Record<Locale, Translations> = {
     messagePlaceholder: "Mensagem...",
     waitingPlaceholder: "Aguardando...",
     connectionError: "Erro de conexão. Tente novamente.",
+    quickExpiring: "{count} vencendo em breve",
+    quickCritical: "{count} dispositivos críticos",
+    quickSummary: "Resumo do portfólio",
+    quickLapsed: "{count} vencidos",
+    promptExpiring: "Quais garantias estão vencendo nos próximos 30 dias?",
+    promptCritical: "Mostre-me todos os dispositivos de nível crítico e seu status",
+    promptSummary: "Me dê um resumo do meu portfólio — dispositivos, economias e alertas",
+    promptLapsed: "Quais garantias venceram e precisam de recuperação?",
     settings: "Configurações",
     profileSettings: "Configurações de Perfil",
     companyInfo: "Informações da Empresa",

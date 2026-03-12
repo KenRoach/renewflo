@@ -106,6 +106,17 @@ export interface ChatMessage {
   text: string;
 }
 
+export interface ChatContext {
+  user: { name: string; role: string; orgId: string };
+  portfolio: { totalDevices: number; uniqueClients: number; totalOEM: number; totalTPM: number; savings: number };
+  alerts: { expiring30: number; lapsed: number; critical: number };
+  pipeline: Record<string, number>;
+  orders: { total: number; pending: number; fulfilled: number; totalValue: number };
+  topExpiring: Array<{ brand: string; model: string; client: string; daysLeft: number }>;
+  currentPage: string;
+  locale: string;
+}
+
 // ─── Import Types ───
 
 export interface ImportFieldDef {
