@@ -11,8 +11,11 @@ import { SupportLogsPage } from "@/features/support";
 import { RewardsPage } from "@/features/rewards";
 import { OrdersPage } from "@/features/orders";
 import { PipelinePage } from "@/features/pipeline";
+import { SettingsPage } from "@/features/settings";
+import { HowItWorksPage } from "@/features/how-it-works";
 import { ChatPanel } from "@/features/chat";
 import { LoginPage } from "@/features/auth";
+import { PageTransition } from "@/components/ui";
 import type { Asset, PageId, UserRole } from "@/types";
 import { useAssetStore, useAuthStore } from "@/stores";
 
@@ -20,9 +23,9 @@ const LOCALE_STORAGE_KEY = "renewflow_locale";
 
 // ─── Role-based page access ───
 const ROLE_PAGES: Record<UserRole, PageId[]> = {
-  var: ["dashboard", "inbox", "notifications", "quoter", "orders", "import", "support", "rewards", "pipeline"],
-  support: ["dashboard", "notifications", "support", "orders", "inbox", "quoter", "rewards", "pipeline"],
-  "delivery-partner": ["dashboard", "notifications", "orders", "support", "inbox", "pipeline", "quoter"],
+  var: ["dashboard", "inbox", "notifications", "quoter", "orders", "import", "support", "rewards", "pipeline", "settings", "how-it-works"],
+  support: ["dashboard", "notifications", "support", "orders", "inbox", "quoter", "rewards", "pipeline", "settings", "how-it-works"],
+  "delivery-partner": ["dashboard", "notifications", "orders", "support", "inbox", "pipeline", "quoter", "settings", "how-it-works"],
 };
 
 export default function App() {
@@ -132,6 +135,10 @@ export default function App() {
         return <RewardsPage />;
       case "pipeline":
         return <PipelinePage assets={assets} userRole={userRole} />;
+      case "settings":
+        return <SettingsPage />;
+      case "how-it-works":
+        return <HowItWorksPage />;
       default:
         return <DashboardPage setPage={handleNavigate} assets={assets} userRole={userRole} />;
     }
@@ -168,7 +175,9 @@ export default function App() {
 
           <ChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
 
-          <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>{renderPage()}</div>
+          <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+            <PageTransition pageKey={page}>{renderPage()}</PageTransition>
+          </div>
         </div>
       </LocaleContext.Provider>
     </ThemeContext.Provider>

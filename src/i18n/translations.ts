@@ -96,12 +96,56 @@ export interface Translations {
   quoteBuilder: string;
   // How it works
   howItWorks: string;
+  suggestImprovement: string;
+  suggestionPlaceholder: string;
+  sendSuggestion: string;
+  suggestionSent: string;
+  suggestionThanks: string;
   // Chat
   aiConnected: string;
   thinking: string;
   messagePlaceholder: string;
   waitingPlaceholder: string;
   connectionError: string;
+  // Settings
+  settings: string;
+  profileSettings: string;
+  companyInfo: string;
+  displayName: string;
+  emailAddress: string;
+  phone: string;
+  companyName: string;
+  timezone: string;
+  language: string;
+  emailSignature: string;
+  notificationPrefs: string;
+  emailNotifications: string;
+  renewalAlerts: string;
+  weeklyDigest: string;
+  saveChanges: string;
+  saved: string;
+  // Notifications
+  assetAlerts: string;
+  expiringWithin30: string;
+  totalDevices: string;
+  // Support (dynamic subtitles)
+  needAttention: string;
+  ticket: string;
+  tickets: string;
+  // Orders
+  active: string;
+  totalValueLabel: string;
+  // Inbox
+  inboxSubtitle: string;
+  // Import
+  downloadTemplate: string;
+  // Empty states
+  noTicketsTitle: string;
+  noTicketsDesc: string;
+  noOrdersTitle: string;
+  noOrdersDesc: string;
+  noEmailsTitle: string;
+  noEmailsDesc: string;
   // Common
   loading: string;
   darkMode: string;
@@ -183,11 +227,48 @@ export const translations: Record<Locale, Translations> = {
     partnerRewards: "Partner Rewards",
     quoteBuilder: "Quote Builder",
     howItWorks: "How does it work?",
+    suggestImprovement: "Suggest an Improvement",
+    suggestionPlaceholder: "Tell us how we can make RenewFlow better...",
+    sendSuggestion: "Send Suggestion",
+    suggestionSent: "Sent!",
+    suggestionThanks: "Thanks for your feedback! We review every suggestion.",
     aiConnected: "RenewFlow AI connected. How can I help?",
     thinking: "Thinking...",
     messagePlaceholder: "Message...",
     waitingPlaceholder: "Waiting...",
     connectionError: "Connection error. Please try again.",
+    settings: "Settings",
+    profileSettings: "Profile Settings",
+    companyInfo: "Company Information",
+    displayName: "Display Name",
+    emailAddress: "Email Address",
+    phone: "Phone",
+    companyName: "Company Name",
+    timezone: "Timezone",
+    language: "Language",
+    emailSignature: "Email Signature",
+    notificationPrefs: "Notification Preferences",
+    emailNotifications: "Email Notifications",
+    renewalAlerts: "Renewal Alerts",
+    weeklyDigest: "Weekly Digest",
+    saveChanges: "Save Changes",
+    saved: "Saved",
+    assetAlerts: "Asset Alerts",
+    expiringWithin30: "expiring within 30 days",
+    totalDevices: "total devices",
+    needAttention: "need attention",
+    ticket: "ticket",
+    tickets: "tickets",
+    active: "active",
+    totalValueLabel: "total value",
+    inboxSubtitle: "Send & receive emails with customers and partners",
+    downloadTemplate: "Download Template",
+    noTicketsTitle: "No support tickets yet",
+    noTicketsDesc: "When you or your team create support tickets, they will appear here.",
+    noOrdersTitle: "No purchase orders yet",
+    noOrdersDesc: "Generate a quote and convert it to a purchase order to get started.",
+    noEmailsTitle: "Your inbox is empty",
+    noEmailsDesc: "Send your first email to a customer or partner to start communicating.",
     loading: "Loading...",
     darkMode: "Dark mode",
     lightMode: "Light mode",
@@ -266,11 +347,48 @@ export const translations: Record<Locale, Translations> = {
     partnerRewards: "Recompensas de Socios",
     quoteBuilder: "Creador de Cotizaciones",
     howItWorks: "¿Cómo funciona?",
+    suggestImprovement: "Sugiere una Mejora",
+    suggestionPlaceholder: "Cuéntanos cómo podemos mejorar RenewFlow...",
+    sendSuggestion: "Enviar Sugerencia",
+    suggestionSent: "¡Enviado!",
+    suggestionThanks: "¡Gracias por tu comentario! Revisamos cada sugerencia.",
     aiConnected: "RenewFlow IA conectada. ¿En qué puedo ayudarte?",
     thinking: "Pensando...",
     messagePlaceholder: "Mensaje...",
     waitingPlaceholder: "Esperando...",
     connectionError: "Error de conexión. Inténtalo de nuevo.",
+    settings: "Configuración",
+    profileSettings: "Configuración de Perfil",
+    companyInfo: "Información de la Empresa",
+    displayName: "Nombre",
+    emailAddress: "Correo Electrónico",
+    phone: "Teléfono",
+    companyName: "Nombre de Empresa",
+    timezone: "Zona Horaria",
+    language: "Idioma",
+    emailSignature: "Firma de Correo",
+    notificationPrefs: "Preferencias de Notificación",
+    emailNotifications: "Notificaciones por Correo",
+    renewalAlerts: "Alertas de Renovación",
+    weeklyDigest: "Resumen Semanal",
+    saveChanges: "Guardar Cambios",
+    saved: "Guardado",
+    assetAlerts: "Alertas de Activos",
+    expiringWithin30: "vencen en 30 días",
+    totalDevices: "dispositivos totales",
+    needAttention: "necesitan atención",
+    ticket: "ticket",
+    tickets: "tickets",
+    active: "activo(s)",
+    totalValueLabel: "valor total",
+    inboxSubtitle: "Envía y recibe correos con clientes y socios",
+    downloadTemplate: "Descargar Plantilla",
+    noTicketsTitle: "Sin tickets de soporte",
+    noTicketsDesc: "Cuando tú o tu equipo creen tickets de soporte, aparecerán aquí.",
+    noOrdersTitle: "Sin órdenes de compra",
+    noOrdersDesc: "Genera una cotización y conviértela en una orden de compra para comenzar.",
+    noEmailsTitle: "Tu bandeja está vacía",
+    noEmailsDesc: "Envía tu primer correo a un cliente o socio para comenzar a comunicarte.",
     loading: "Cargando...",
     darkMode: "Modo oscuro",
     lightMode: "Modo claro",
@@ -349,11 +467,48 @@ export const translations: Record<Locale, Translations> = {
     partnerRewards: "Recompensas de Parceiros",
     quoteBuilder: "Criador de Cotações",
     howItWorks: "Como funciona?",
+    suggestImprovement: "Sugira uma Melhoria",
+    suggestionPlaceholder: "Conte-nos como podemos melhorar o RenewFlow...",
+    sendSuggestion: "Enviar Sugestão",
+    suggestionSent: "Enviado!",
+    suggestionThanks: "Obrigado pelo seu feedback! Revisamos cada sugestão.",
     aiConnected: "RenewFlow IA conectada. Como posso ajudar?",
     thinking: "Pensando...",
     messagePlaceholder: "Mensagem...",
     waitingPlaceholder: "Aguardando...",
     connectionError: "Erro de conexão. Tente novamente.",
+    settings: "Configurações",
+    profileSettings: "Configurações de Perfil",
+    companyInfo: "Informações da Empresa",
+    displayName: "Nome",
+    emailAddress: "Endereço de Email",
+    phone: "Telefone",
+    companyName: "Nome da Empresa",
+    timezone: "Fuso Horário",
+    language: "Idioma",
+    emailSignature: "Assinatura de Email",
+    notificationPrefs: "Preferências de Notificação",
+    emailNotifications: "Notificações por Email",
+    renewalAlerts: "Alertas de Renovação",
+    weeklyDigest: "Resumo Semanal",
+    saveChanges: "Salvar Alterações",
+    saved: "Salvo",
+    assetAlerts: "Alertas de Ativos",
+    expiringWithin30: "vencendo em 30 dias",
+    totalDevices: "dispositivos totais",
+    needAttention: "precisam de atenção",
+    ticket: "ticket",
+    tickets: "tickets",
+    active: "ativo(s)",
+    totalValueLabel: "valor total",
+    inboxSubtitle: "Envie e receba emails com clientes e parceiros",
+    downloadTemplate: "Baixar Modelo",
+    noTicketsTitle: "Nenhum ticket de suporte",
+    noTicketsDesc: "Quando você ou sua equipe criarem tickets de suporte, eles aparecerão aqui.",
+    noOrdersTitle: "Nenhum pedido de compra",
+    noOrdersDesc: "Gere uma cotação e converta-a em um pedido de compra para começar.",
+    noEmailsTitle: "Sua caixa de entrada está vazia",
+    noEmailsDesc: "Envie seu primeiro email para um cliente ou parceiro para começar a se comunicar.",
     loading: "Carregando...",
     darkMode: "Modo escuro",
     lightMode: "Modo claro",

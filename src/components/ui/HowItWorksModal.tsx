@@ -156,8 +156,6 @@ export const HowItWorksModal: FC<HowItWorksModalProps> = ({ open, onClose }) => 
                 style={{
                   width: 36,
                   height: 36,
-                  borderRadius: 10,
-                  background: colors.accentDim,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -165,7 +163,7 @@ export const HowItWorksModal: FC<HowItWorksModalProps> = ({ open, onClose }) => 
                   position: "relative",
                 }}
               >
-                <Icon name={step.icon} size={16} color={colors.accent} />
+                <Icon name={step.icon} size={18} color={colors.accent} />
                 <span
                   style={{
                     position: "absolute",

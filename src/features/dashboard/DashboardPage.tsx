@@ -23,7 +23,7 @@ const VarDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: 0 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>
             {t.goodMorning}
           </h2>
           <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
@@ -189,7 +189,7 @@ const SupportDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }>
   return (
     <>
       <div>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: 0 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>
           {t.opsDashboard}
         </h2>
         <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
@@ -324,7 +324,7 @@ const DeliveryDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }
   return (
     <>
       <div>
-        <h2 style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: 0 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>
           {t.myDashboard}
         </h2>
         <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>

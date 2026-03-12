@@ -1,7 +1,8 @@
 import { useState, useEffect, type FC } from "react";
 import { useTheme, FONT } from "@/theme";
 import { Icon } from "@/components/icons";
-import { Badge, Card, Pill } from "@/components/ui";
+import { Badge, Card, Pill, NewTicketModal, EmptyState } from "@/components/ui";
+import { useLocale } from "@/i18n";
 import { listTickets } from "@/services/api";
 import { SUPPORT_LOGS } from "@/data/seeds";
 import type { SupportTicket, TicketStatus, UserRole } from "@/types";
@@ -12,9 +13,11 @@ interface SupportLogsPageProps {
 
 export const SupportLogsPage: FC<SupportLogsPageProps> = ({ userRole = "var" }) => {
   const { colors } = useTheme();
+  const { t } = useLocale();
   const [filter, setFilter] = useState<"all" | TicketStatus>("all");
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showNewTicket, setShowNewTicket] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,7 +40,7 @@ export const SupportLogsPage: FC<SupportLogsPageProps> = ({ userRole = "var" }) 
   const priorityColor = (p: string) =>
     ({ critical: colors.danger, high: colors.warn, medium: colors.blue, low: colors.textMid }[p] ?? colors.textMid);
 
-  const filtered = filter === "all" ? tickets : tickets.filter((t) => t.status === filter);
+  const filtered = filter === "all" ? tickets : tickets.filter((tk) => tk.status === filter);
 
   if (loading) {
     return (
@@ -49,29 +52,35 @@ export const SupportLogsPage: FC<SupportLogsPageProps> = ({ userRole = "var" }) 
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>
-          {userRole === "delivery-partner" ? "Service Tickets" : userRole === "support" ? "Support Tickets" : "Support"}
-        </h2>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+        <div>
+          <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>
+            {userRole === "delivery-partner" ? t.serviceTickets : userRole === "support" ? t.supportTickets : t.support}
+          </h2>
+          <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
+            {filtered.length} {filtered.length !== 1 ? t.tickets : t.ticket} &middot; {tickets.filter((tk) => tk.status === "open" || tk.status === "escalated").length} {t.needAttention}
+          </p>
+        </div>
         {(userRole === "var" || userRole === "support") && (
           <button
+            onClick={() => setShowNewTicket(true)}
             style={{
-              background: colors.card,
-              color: colors.text,
-              border: `1px solid ${colors.border}`,
+              background: colors.accent,
+              color: "#fff",
+              border: "none",
               borderRadius: 10,
               padding: "10px 20px",
               fontSize: 13,
-              fontWeight: 500,
+              fontWeight: 600,
               cursor: "pointer",
               fontFamily: FONT,
               display: "flex",
               alignItems: "center",
               gap: 8,
-              boxShadow: colors.shadow,
+              boxShadow: `0 2px 8px ${colors.accent}40`,
             }}
           >
-            <Icon name="plus" size={14} color={colors.accent} /> New Ticket
+            <Icon name="plus" size={14} color="#fff" /> New Ticket
           </button>
         )}
       </div>
@@ -85,24 +94,42 @@ export const SupportLogsPage: FC<SupportLogsPageProps> = ({ userRole = "var" }) 
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {filtered.map((t) => (
-          <Card key={t.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px" }}>
-            <Icon name="support" size={18} color={statusColor(t.status)} />
+        {filtered.length === 0 && (
+          <EmptyState
+            icon="support"
+            title={t.noTicketsTitle}
+            description={t.noTicketsDesc}
+            action={
+              (userRole === "var" || userRole === "support")
+                ? { label: t.newTicket, onClick: () => setShowNewTicket(true) }
+                : undefined
+            }
+          />
+        )}
+        {filtered.map((tk) => (
+          <Card key={tk.id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px" }}>
+            <Icon name="support" size={18} color={statusColor(tk.status)} />
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>{t.id}</span>
-                <Badge color={priorityColor(t.priority)}>{t.priority}</Badge>
-                <Badge color={statusColor(t.status)}>{t.status}</Badge>
+                <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>{tk.id}</span>
+                <Badge color={priorityColor(tk.priority)}>{tk.priority}</Badge>
+                <Badge color={statusColor(tk.status)}>{tk.status}</Badge>
               </div>
-              <div style={{ fontSize: 13, color: colors.text }}>{t.issue}</div>
+              <div style={{ fontSize: 13, color: colors.text }}>{tk.issue}</div>
               <div style={{ fontSize: 12, color: colors.textMid, marginTop: 2 }}>
-                {t.client} &middot; {t.device} &middot; {t.assignee}
+                {tk.client} &middot; {tk.device} &middot; {tk.assignee}
               </div>
             </div>
-            <span style={{ fontSize: 12, color: colors.textMid }}>{t.created}</span>
+            <span style={{ fontSize: 12, color: colors.textMid }}>{tk.created}</span>
           </Card>
         ))}
       </div>
+
+      <NewTicketModal
+        open={showNewTicket}
+        onClose={() => setShowNewTicket(false)}
+        onSubmit={() => setShowNewTicket(false)}
+      />
     </div>
   );
 };

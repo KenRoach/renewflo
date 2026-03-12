@@ -1,7 +1,7 @@
-import { useState, type FC } from "react";
+import { type FC } from "react";
 import { useTheme, FONT } from "@/theme";
 import { Icon, type IconName } from "@/components/icons";
-import { ThemeToggle, LanguageToggle, HowItWorksModal } from "@/components/ui";
+import { ThemeToggle, LanguageToggle } from "@/components/ui";
 import { useLocale } from "@/i18n";
 import type { PageId, UserRole } from "@/types";
 import { ROLE_LABELS } from "@/types";
@@ -98,7 +98,6 @@ export const Sidebar: FC<SidebarProps> = ({
 }) => {
   const { colors, isDark } = useTheme();
   const { t } = useLocale();
-  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   const initials = userName
     ? userName
@@ -229,29 +228,20 @@ export const Sidebar: FC<SidebarProps> = ({
         <div style={{ flex: 1 }} />
 
         <div style={{ marginBottom: 6 }}>
-          <button
-            title={t.howItWorks}
-            onClick={() => setShowHowItWorks(true)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: "8px 12px",
-              borderRadius: 8,
-              border: "none",
-              cursor: "pointer",
-              fontFamily: FONT,
-              width: "100%",
-              textAlign: "left",
-              background: "transparent",
-              color: colors.textMid,
-              fontSize: 12,
-              fontWeight: 400,
-            }}
-          >
-            <Icon name="help" size={16} color={colors.textMid} />
-            <span style={{ flex: 1 }}>{t.howItWorks}</span>
-          </button>
+          <NavBtn
+            id="settings"
+            icon="settings"
+            label={t.settings}
+            active={activePage === "settings"}
+            onClick={() => onNavigate("settings")}
+          />
+          <NavBtn
+            id="how-it-works"
+            icon="help"
+            label={t.howItWorks}
+            active={activePage === "how-it-works"}
+            onClick={() => onNavigate("how-it-works")}
+          />
           <LanguageToggle />
           <ThemeToggle />
         </div>
@@ -346,7 +336,6 @@ export const Sidebar: FC<SidebarProps> = ({
         )}
       </div>
 
-      <HowItWorksModal open={showHowItWorks} onClose={() => setShowHowItWorks(false)} />
     </div>
   );
 };

@@ -1,10 +1,11 @@
 import { useState, type FC } from "react";
 import { useTheme } from "@/theme";
 import { Icon } from "@/components/icons";
-import { Badge, Card, Pill } from "@/components/ui";
+import { Badge, Card, PageHeader, Pill } from "@/components/ui";
 import { tierColor, urgencyColor } from "@/utils";
 import type { Asset, AssetTier } from "@/types";
 import { MONO } from "@/theme";
+import { useLocale } from "@/i18n";
 
 interface NotificationsPageProps {
   assets: Asset[];
@@ -12,15 +13,17 @@ interface NotificationsPageProps {
 
 export const NotificationsPage: FC<NotificationsPageProps> = ({ assets }) => {
   const { colors } = useTheme();
+  const { t } = useLocale();
   const [filter, setFilter] = useState<"all" | AssetTier>("all");
 
   const filtered = filter === "all" ? assets : assets.filter((a) => a.tier === filter);
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>Asset Alerts</h2>
-      </div>
+      <PageHeader
+        title={t.assetAlerts}
+        subtitle={`${assets.filter((a) => a.daysLeft <= 30).length} ${t.expiringWithin30} · ${assets.length} ${t.totalDevices}`}
+      />
 
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         {(["all", "critical", "standard", "low-use"] as const).map((t) => (

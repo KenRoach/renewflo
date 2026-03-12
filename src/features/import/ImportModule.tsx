@@ -2,9 +2,10 @@ import { useState, useRef, useCallback, type FC } from "react";
 import * as XLSX from "xlsx";
 import { useTheme, MONO, FONT } from "@/theme";
 import { Icon } from "@/components/icons";
-import { Badge, Card } from "@/components/ui";
+import { Badge, Card, DownloadTemplateModal } from "@/components/ui";
 import { IMPORT_FIELD_DEFINITIONS, SAMPLE_TEMPLATE_ROWS } from "@/data/seeds";
 import type { Asset, ImportStep, ColumnMapping, AssetTier, AssetStatus } from "@/types";
+import { useRewardsStore } from "@/stores";
 
 interface ImportModuleProps {
   onImport: (assets: Asset[] | null) => void;
@@ -12,6 +13,7 @@ interface ImportModuleProps {
 
 export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
   const { colors } = useTheme();
+  const addPoints = useRewardsStore((s) => s.addPoints);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<ImportStep>("upload");
   const [rawData, setRawData] = useState<unknown[][] | null>(null);
@@ -21,6 +23,7 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
   const [dragOver, setDragOver] = useState(false);
   const [fileName, setFileName] = useState("");
   const [error, setError] = useState("");
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
 
   const parseFile = useCallback((file: File) => {
     setError("");
@@ -149,24 +152,24 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
             <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>Upload your installed base from Excel or CSV</p>
           </div>
           <button
-            onClick={downloadTemplate}
+            onClick={() => setShowTemplateModal(true)}
             style={{
-              background: colors.card,
-              color: colors.text,
-              border: `1px solid ${colors.border}`,
+              background: colors.accent,
+              color: "#fff",
+              border: "none",
               borderRadius: 10,
               padding: "10px 20px",
               fontSize: 13,
-              fontWeight: 500,
+              fontWeight: 600,
               cursor: "pointer",
               fontFamily: FONT,
               display: "flex",
               alignItems: "center",
               gap: 8,
-              boxShadow: colors.shadow,
+              boxShadow: `0 2px 8px ${colors.accent}40`,
             }}
           >
-            <Icon name="download" size={14} color={colors.accent} /> Download Template
+            <Icon name="download" size={14} color="#fff" /> Download Template
           </button>
         </div>
         <div
@@ -218,6 +221,12 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
             </Card>
           ))}
         </div>
+
+        <DownloadTemplateModal
+          open={showTemplateModal}
+          onClose={() => setShowTemplateModal(false)}
+          onDownload={() => { downloadTemplate(); setShowTemplateModal(false); }}
+        />
       </div>
     );
   }
@@ -388,7 +397,7 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
               Back
             </button>
             <button
-              onClick={() => { onImport(parsedAssets); setStep("done"); }}
+              onClick={() => { onImport(parsedAssets); setStep("done"); addPoints(`Imported ${parsedAssets.length} assets`, 10); }}
               style={{
                 background: colors.accent,
                 color: "#fff",

@@ -164,4 +164,28 @@ export type PageId =
   | "support"
   | "rewards"
   | "orders"
-  | "pipeline";
+  | "pipeline"
+  | "settings"
+  | "how-it-works";
+
+// ─── Inbox Email Types ───
+
+export type EmailDirection = "inbound" | "outbound";
+export type EmailCategory = "quote" | "renewal" | "promo" | "general" | "reply";
+
+export interface InboxEmail {
+  id: string;
+  direction: EmailDirection;
+  category: EmailCategory;
+  from: string;
+  fromName: string;
+  to: string;
+  toName: string;
+  subject: string;
+  body: string;
+  read: boolean;
+  starred: boolean;
+  timestamp: string;
+  threadId?: string;
+  replyTo?: string;
+}

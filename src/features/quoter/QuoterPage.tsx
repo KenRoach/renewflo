@@ -4,7 +4,7 @@ import { Icon } from "@/components/icons";
 import { Badge, Card, SectionHeader } from "@/components/ui";
 import { tierColor, urgencyColor, generateQuotePdf } from "@/utils";
 import { generateQuote, sendQuoteEmail, type QuoteResult } from "@/services/api";
-import { useAuthStore } from "@/stores";
+import { useAuthStore, useRewardsStore } from "@/stores";
 import type { Asset } from "@/types";
 
 interface QuoterPageProps {
@@ -114,6 +114,7 @@ const emptyLine = (): NewLineItem => ({
 export const QuoterPage: FC<QuoterPageProps> = ({ assets }) => {
   const { colors } = useTheme();
   const user = useAuthStore((s) => s.user);
+  const addPoints = useRewardsStore((s) => s.addPoints);
 
   // ── Shared state ──
   const [mode, setMode] = useState<QuoterMode>("assets");
@@ -246,6 +247,7 @@ export const QuoterPage: FC<QuoterPageProps> = ({ assets }) => {
       };
       setQuote(result);
       generateQuotePdf(result);
+      addPoints(`Quote generated: ${result.deviceCount} device(s) — $${result.summary.selectedTotal.toLocaleString()}`, 25);
     } finally {
       setGenerating(false);
     }
@@ -335,6 +337,9 @@ export const QuoterPage: FC<QuoterPageProps> = ({ assets }) => {
         user?.email || "noreply@renewflow.io",
       );
       setSendResult({ sent: result.sent, failed: result.failed });
+      if (result.sent.length > 0) {
+        addPoints(`Quote emailed to ${result.sent.length} recipient(s)`, 15);
+      }
     } catch {
       setSendResult({ sent: [], failed: emailList });
     } finally {
