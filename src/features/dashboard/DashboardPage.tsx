@@ -4,6 +4,7 @@ import { Icon } from "@/components/icons";
 import { Badge, Card, MetricCard, SectionHeader, StatusDot } from "@/components/ui";
 import { useAssetMetrics } from "@/hooks";
 import { urgencyColor, statusLabel } from "@/utils";
+import { useLocale } from "@/i18n";
 import type { Asset, PageId, UserRole } from "@/types";
 
 interface DashboardPageProps {
@@ -15,6 +16,7 @@ interface DashboardPageProps {
 // ─── VAR Dashboard ───
 const VarDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = ({ assets, setPage }) => {
   const { colors } = useTheme();
+  const { t } = useLocale();
   const metrics = useAssetMetrics(assets);
 
   return (
@@ -22,10 +24,10 @@ const VarDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div>
           <h2 style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: 0 }}>
-            Good morning, Partner
+            {t.goodMorning}
           </h2>
           <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
-            Portfolio summary &middot; March 2026 &middot; {metrics.totalDevices} devices tracked
+            {t.portfolioSummary} &middot; March 2026 &middot; {metrics.totalDevices} {t.devicesTracked}
           </p>
         </div>
         <button
@@ -46,40 +48,40 @@ const VarDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = (
             boxShadow: `0 2px 8px ${colors.accent}40`,
           }}
         >
-          <Icon name="upload" size={16} color="#fff" /> Import Assets
+          <Icon name="upload" size={16} color="#fff" /> {t.importAssets}
         </button>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
         <MetricCard
-          label="Active Devices"
+          label={t.activeDevices}
           value={String(metrics.totalDevices)}
-          sub={`${metrics.uniqueClients} clients`}
+          sub={`${metrics.uniqueClients} ${t.clients}`}
           icon="dashboard"
           color={colors.accent}
           trend={12}
         />
         <MetricCard
-          label="Revenue at Risk"
+          label={t.revenueAtRisk}
           value={`$${metrics.totalOEM.toLocaleString()}`}
-          sub="Next 90 days"
+          sub={t.next90Days}
           icon="alert"
           color={colors.warn}
         />
         <MetricCard
-          label="TPM Savings"
+          label={t.tpmSavings}
           value={`$${metrics.savings.toLocaleString()}`}
-          sub="vs OEM list price"
+          sub={t.vsOemPrice}
           icon="rewards"
           color={colors.accent}
           trend={8}
         />
-        <MetricCard label="Renewal Rate" value="87%" sub="+3% vs last month" icon="refresh" color={colors.blue} trend={3} />
+        <MetricCard label={t.renewalRate} value="87%" sub="+3% vs last month" icon="refresh" color={colors.blue} trend={3} />
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
         <Card>
-          <SectionHeader title="Active Alerts" action="View all" onAction={() => setPage("notifications")} />
+          <SectionHeader title={t.activeAlerts} action={t.viewAll} onAction={() => setPage("notifications")} />
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {assets
               .filter((a) => a.daysLeft <= 30)
@@ -117,7 +119,7 @@ const VarDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = (
         </Card>
 
         <Card>
-          <SectionHeader title="Renewal Pipeline" />
+          <SectionHeader title={t.renewalPipeline} />
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
               { stage: "Quoted", count: metrics.quotedCount, color: colors.blue },
@@ -148,7 +150,7 @@ const VarDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = (
       </div>
 
       <Card>
-        <SectionHeader title="Recent Activity" />
+        <SectionHeader title={t.recentActivity} />
         {[
           { text: "Grupo Alfa approved TPM quote — 5 Dell Latitude", time: "2h ago", color: colors.accent },
           { text: "7-day alert sent — Dell Latitude 5540 (DLTG7X3)", time: "4h ago", color: colors.danger },
@@ -178,6 +180,7 @@ const VarDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = (
 // ─── Support Team Dashboard ───
 const SupportDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = ({ assets, setPage }) => {
   const { colors } = useTheme();
+  const { t } = useLocale();
   const metrics = useAssetMetrics(assets);
 
   const urgentAssets = assets.filter((a) => a.daysLeft <= 14 && a.daysLeft >= 0);
@@ -187,39 +190,39 @@ const SupportDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }>
     <>
       <div>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: 0 }}>
-          Operations Dashboard
+          {t.opsDashboard}
         </h2>
         <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
-          RenewFlow support overview &middot; March 2026
+          {t.supportOverview} &middot; March 2026
         </p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
         <MetricCard
-          label="Total Assets"
+          label={t.totalAssets}
           value={String(metrics.totalDevices)}
-          sub={`${metrics.uniqueClients} organizations`}
+          sub={`${metrics.uniqueClients} ${t.organizations}`}
           icon="dashboard"
           color={colors.accent}
         />
         <MetricCard
-          label="Urgent (≤14d)"
+          label={`${t.urgent} (≤14d)`}
           value={String(urgentAssets.length)}
-          sub="Require attention"
+          sub={t.requireAttention}
           icon="alert"
           color={colors.danger}
         />
         <MetricCard
-          label="Lapsed"
+          label={t.lapsed}
           value={String(lapsedAssets.length)}
-          sub="Recovery queue"
+          sub={t.recoveryQueue}
           icon="support"
           color={colors.warn}
         />
         <MetricCard
-          label="Active Quotes"
+          label={t.activeQuotes}
           value={String(metrics.quotedCount)}
-          sub="Pending approval"
+          sub={t.pendingApproval}
           icon="quote"
           color={colors.blue}
         />
@@ -313,6 +316,7 @@ const SupportDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }>
 // ─── Delivery Partner Dashboard ───
 const DeliveryDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = ({ assets, setPage }) => {
   const { colors } = useTheme();
+  const { t } = useLocale();
 
   const assignedCount = assets.length;
   const urgentCount = assets.filter((a) => a.daysLeft <= 14 && a.daysLeft >= 0).length;
@@ -321,32 +325,32 @@ const DeliveryDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }
     <>
       <div>
         <h2 style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: 0 }}>
-          My Dashboard
+          {t.myDashboard}
         </h2>
         <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
-          Delivery fulfillment overview &middot; March 2026
+          {t.deliveryOverview} &middot; March 2026
         </p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
         <MetricCard
-          label="Assigned POs"
+          label={t.assignedPOs}
           value="3"
-          sub="Awaiting fulfillment"
+          sub={t.awaitingFulfillment}
           icon="order"
           color={colors.accent}
         />
         <MetricCard
-          label="Urgent Devices"
+          label={t.urgentDevices}
           value={String(urgentCount)}
-          sub="≤14 days to expiry"
+          sub={t.daysToExpiry}
           icon="alert"
           color={colors.danger}
         />
         <MetricCard
-          label="Devices in Scope"
+          label={t.devicesInScope}
           value={String(assignedCount)}
-          sub="Across all POs"
+          sub={t.acrossAllPOs}
           icon="dashboard"
           color={colors.blue}
         />

@@ -83,6 +83,19 @@ export interface Translations {
   supportTickets: string;
   serviceTickets: string;
   newTicket: string;
+  // Sidebar sections (role-specific)
+  overview: string;
+  management: string;
+  fulfillment: string;
+  communication: string;
+  tracking: string;
+  // Sidebar labels (role-specific)
+  messages: string;
+  quotesReview: string;
+  partnerRewards: string;
+  quoteBuilder: string;
+  // How it works
+  howItWorks: string;
   // Common
   loading: string;
   darkMode: string;
@@ -154,6 +167,16 @@ export const translations: Record<Locale, Translations> = {
     newTicket: "New Ticket",
     supportTickets: "Support Tickets",
     serviceTickets: "Service Tickets",
+    overview: "Overview",
+    management: "Management",
+    fulfillment: "Fulfillment",
+    communication: "Communication",
+    tracking: "Tracking",
+    messages: "Messages",
+    quotesReview: "Quotes Review",
+    partnerRewards: "Partner Rewards",
+    quoteBuilder: "Quote Builder",
+    howItWorks: "How does it work?",
     loading: "Loading...",
     darkMode: "Dark mode",
     lightMode: "Light mode",
@@ -222,6 +245,16 @@ export const translations: Record<Locale, Translations> = {
     newTicket: "Nuevo Ticket",
     supportTickets: "Tickets de Soporte",
     serviceTickets: "Tickets de Servicio",
+    overview: "Resumen",
+    management: "Gestión",
+    fulfillment: "Cumplimiento",
+    communication: "Comunicación",
+    tracking: "Seguimiento",
+    messages: "Mensajes",
+    quotesReview: "Revisión de Cotizaciones",
+    partnerRewards: "Recompensas de Socios",
+    quoteBuilder: "Creador de Cotizaciones",
+    howItWorks: "¿Cómo funciona?",
     loading: "Cargando...",
     darkMode: "Modo oscuro",
     lightMode: "Modo claro",
@@ -290,6 +323,16 @@ export const translations: Record<Locale, Translations> = {
     newTicket: "Novo Ticket",
     supportTickets: "Tickets de Suporte",
     serviceTickets: "Tickets de Serviço",
+    overview: "Visão Geral",
+    management: "Gestão",
+    fulfillment: "Entrega",
+    communication: "Comunicação",
+    tracking: "Acompanhamento",
+    messages: "Mensagens",
+    quotesReview: "Revisão de Cotações",
+    partnerRewards: "Recompensas de Parceiros",
+    quoteBuilder: "Criador de Cotações",
+    howItWorks: "Como funciona?",
     loading: "Carregando...",
     darkMode: "Modo escuro",
     lightMode: "Modo claro",

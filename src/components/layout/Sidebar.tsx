@@ -2,6 +2,7 @@ import type { FC } from "react";
 import { useTheme, FONT } from "@/theme";
 import { Icon, type IconName } from "@/components/icons";
 import { ThemeToggle, LanguageToggle } from "@/components/ui";
+import { useLocale } from "@/i18n";
 import type { PageId, UserRole } from "@/types";
 import { ROLE_LABELS } from "@/types";
 
@@ -96,6 +97,7 @@ export const Sidebar: FC<SidebarProps> = ({
   onLogout,
 }) => {
   const { colors, isDark } = useTheme();
+  const { t } = useLocale();
 
   const initials = userName
     ? userName
@@ -164,20 +166,20 @@ export const Sidebar: FC<SidebarProps> = ({
         {/* ─── VAR Navigation ─── */}
         {userRole === "var" && (
           <>
-            <NavSection label="General">
-              <NavBtn id="dashboard" icon="dashboard" label="Dashboard" active={activePage === "dashboard"} onClick={() => onNavigate("dashboard")} />
-              <NavBtn id="inbox" icon="inbox" label="Inbox" active={activePage === "inbox"} onClick={() => onNavigate("inbox")} />
-              <NavBtn id="notifications" icon="bell" label="Alerts" active={activePage === "notifications"} onClick={() => onNavigate("notifications")} />
+            <NavSection label={t.general}>
+              <NavBtn id="dashboard" icon="dashboard" label={t.dashboard} active={activePage === "dashboard"} onClick={() => onNavigate("dashboard")} />
+              <NavBtn id="inbox" icon="inbox" label={t.inbox} active={activePage === "inbox"} onClick={() => onNavigate("inbox")} />
+              <NavBtn id="notifications" icon="bell" label={t.alerts} active={activePage === "notifications"} onClick={() => onNavigate("notifications")} />
             </NavSection>
-            <NavSection label="Sales">
-              <NavBtn id="quoter" icon="quote" label="Quoter" active={activePage === "quoter"} onClick={() => onNavigate("quoter")} />
-              <NavBtn id="orders" icon="order" label="Purchase Orders" active={activePage === "orders"} onClick={() => onNavigate("orders")} />
-              <NavBtn id="import" icon="upload" label="Import Assets" active={activePage === "import"} onClick={() => onNavigate("import")} />
+            <NavSection label={t.sales}>
+              <NavBtn id="quoter" icon="quote" label={t.quoter} active={activePage === "quoter"} onClick={() => onNavigate("quoter")} />
+              <NavBtn id="orders" icon="order" label={t.purchaseOrders} active={activePage === "orders"} onClick={() => onNavigate("orders")} />
+              <NavBtn id="import" icon="upload" label={t.importAssets} active={activePage === "import"} onClick={() => onNavigate("import")} />
             </NavSection>
-            <NavSection label="Operations">
-              <NavBtn id="support" icon="support" label="Support" active={activePage === "support"} onClick={() => onNavigate("support")} />
-              <NavBtn id="rewards" icon="rewards" label="Rewards" active={activePage === "rewards"} onClick={() => onNavigate("rewards")} />
-              <NavBtn id="pipeline" icon="pipeline" label="Pipeline" active={activePage === "pipeline"} onClick={() => onNavigate("pipeline")} />
+            <NavSection label={t.operations}>
+              <NavBtn id="support" icon="support" label={t.support} active={activePage === "support"} onClick={() => onNavigate("support")} />
+              <NavBtn id="rewards" icon="rewards" label={t.rewards} active={activePage === "rewards"} onClick={() => onNavigate("rewards")} />
+              <NavBtn id="pipeline" icon="pipeline" label={t.pipeline} active={activePage === "pipeline"} onClick={() => onNavigate("pipeline")} />
             </NavSection>
           </>
         )}
@@ -185,19 +187,19 @@ export const Sidebar: FC<SidebarProps> = ({
         {/* ─── Support Team Navigation ─── */}
         {userRole === "support" && (
           <>
-            <NavSection label="Overview">
-              <NavBtn id="dashboard" icon="dashboard" label="Ops Dashboard" active={activePage === "dashboard"} onClick={() => onNavigate("dashboard")} />
-              <NavBtn id="notifications" icon="bell" label="Alerts" active={activePage === "notifications"} onClick={() => onNavigate("notifications")} />
+            <NavSection label={t.overview}>
+              <NavBtn id="dashboard" icon="dashboard" label={t.opsDashboard} active={activePage === "dashboard"} onClick={() => onNavigate("dashboard")} />
+              <NavBtn id="notifications" icon="bell" label={t.alerts} active={activePage === "notifications"} onClick={() => onNavigate("notifications")} />
             </NavSection>
-            <NavSection label="Operations">
-              <NavBtn id="support" icon="support" label="Support Tickets" active={activePage === "support"} onClick={() => onNavigate("support")} />
-              <NavBtn id="orders" icon="order" label="Purchase Orders" active={activePage === "orders"} onClick={() => onNavigate("orders")} />
-              <NavBtn id="inbox" icon="inbox" label="Messages" active={activePage === "inbox"} onClick={() => onNavigate("inbox")} />
+            <NavSection label={t.operations}>
+              <NavBtn id="support" icon="support" label={t.supportTickets} active={activePage === "support"} onClick={() => onNavigate("support")} />
+              <NavBtn id="orders" icon="order" label={t.purchaseOrders} active={activePage === "orders"} onClick={() => onNavigate("orders")} />
+              <NavBtn id="inbox" icon="inbox" label={t.messages} active={activePage === "inbox"} onClick={() => onNavigate("inbox")} />
             </NavSection>
-            <NavSection label="Management">
-              <NavBtn id="quoter" icon="quote" label="Quotes Review" active={activePage === "quoter"} onClick={() => onNavigate("quoter")} />
-              <NavBtn id="rewards" icon="rewards" label="Partner Rewards" active={activePage === "rewards"} onClick={() => onNavigate("rewards")} />
-              <NavBtn id="pipeline" icon="pipeline" label="Pipeline" active={activePage === "pipeline"} onClick={() => onNavigate("pipeline")} />
+            <NavSection label={t.management}>
+              <NavBtn id="quoter" icon="quote" label={t.quotesReview} active={activePage === "quoter"} onClick={() => onNavigate("quoter")} />
+              <NavBtn id="rewards" icon="rewards" label={t.partnerRewards} active={activePage === "rewards"} onClick={() => onNavigate("rewards")} />
+              <NavBtn id="pipeline" icon="pipeline" label={t.pipeline} active={activePage === "pipeline"} onClick={() => onNavigate("pipeline")} />
             </NavSection>
           </>
         )}
@@ -205,20 +207,20 @@ export const Sidebar: FC<SidebarProps> = ({
         {/* ─── Delivery Partner Navigation ─── */}
         {userRole === "delivery-partner" && (
           <>
-            <NavSection label="Overview">
-              <NavBtn id="dashboard" icon="dashboard" label="My Dashboard" active={activePage === "dashboard"} onClick={() => onNavigate("dashboard")} />
-              <NavBtn id="notifications" icon="bell" label="Alerts" active={activePage === "notifications"} onClick={() => onNavigate("notifications")} />
+            <NavSection label={t.overview}>
+              <NavBtn id="dashboard" icon="dashboard" label={t.myDashboard} active={activePage === "dashboard"} onClick={() => onNavigate("dashboard")} />
+              <NavBtn id="notifications" icon="bell" label={t.alerts} active={activePage === "notifications"} onClick={() => onNavigate("notifications")} />
             </NavSection>
-            <NavSection label="Fulfillment">
-              <NavBtn id="orders" icon="order" label="Assigned POs" active={activePage === "orders"} onClick={() => onNavigate("orders")} />
-              <NavBtn id="quoter" icon="quote" label="Quote Builder" active={activePage === "quoter"} onClick={() => onNavigate("quoter")} />
-              <NavBtn id="support" icon="support" label="Service Tickets" active={activePage === "support"} onClick={() => onNavigate("support")} />
+            <NavSection label={t.fulfillment}>
+              <NavBtn id="orders" icon="order" label={t.assignedPOs} active={activePage === "orders"} onClick={() => onNavigate("orders")} />
+              <NavBtn id="quoter" icon="quote" label={t.quoteBuilder} active={activePage === "quoter"} onClick={() => onNavigate("quoter")} />
+              <NavBtn id="support" icon="support" label={t.serviceTickets} active={activePage === "support"} onClick={() => onNavigate("support")} />
             </NavSection>
-            <NavSection label="Communication">
-              <NavBtn id="inbox" icon="inbox" label="Messages" active={activePage === "inbox"} onClick={() => onNavigate("inbox")} />
+            <NavSection label={t.communication}>
+              <NavBtn id="inbox" icon="inbox" label={t.messages} active={activePage === "inbox"} onClick={() => onNavigate("inbox")} />
             </NavSection>
-            <NavSection label="Tracking">
-              <NavBtn id="pipeline" icon="pipeline" label="Pipeline" active={activePage === "pipeline"} onClick={() => onNavigate("pipeline")} />
+            <NavSection label={t.tracking}>
+              <NavBtn id="pipeline" icon="pipeline" label={t.pipeline} active={activePage === "pipeline"} onClick={() => onNavigate("pipeline")} />
             </NavSection>
           </>
         )}
@@ -226,6 +228,29 @@ export const Sidebar: FC<SidebarProps> = ({
         <div style={{ flex: 1 }} />
 
         <div style={{ marginBottom: 6 }}>
+          <button
+            title={t.howItWorks}
+            onClick={() => window.alert(t.howItWorks)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "8px 12px",
+              borderRadius: 8,
+              border: "none",
+              cursor: "pointer",
+              fontFamily: FONT,
+              width: "100%",
+              textAlign: "left",
+              background: "transparent",
+              color: colors.textMid,
+              fontSize: 12,
+              fontWeight: 400,
+            }}
+          >
+            <Icon name="help" size={16} color={colors.textMid} />
+            <span style={{ flex: 1 }}>{t.howItWorks}</span>
+          </button>
           <LanguageToggle />
           <ThemeToggle />
         </div>
@@ -251,7 +276,7 @@ export const Sidebar: FC<SidebarProps> = ({
           }}
         >
           <Icon name="chat" size={16} color={chatOpen ? colors.accent : colors.textMid} />
-          <span style={{ flex: 1 }}>AI Chat</span>
+          <span style={{ flex: 1 }}>{t.aiChat}</span>
           <div
             style={{
               width: 7,
@@ -301,7 +326,7 @@ export const Sidebar: FC<SidebarProps> = ({
         {onLogout && (
           <button
             onClick={onLogout}
-            title="Sign out"
+            title={t.signOut}
             style={{
               background: "none",
               border: "none",
