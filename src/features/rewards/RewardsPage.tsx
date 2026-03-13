@@ -3,9 +3,11 @@ import { useTheme, MONO } from "@/theme";
 import { Icon } from "@/components/icons";
 import { Card, SectionHeader } from "@/components/ui";
 import { useRewardsStore } from "@/stores";
+import { useLocale } from "@/i18n";
 
 export const RewardsPage: FC = () => {
   const { colors } = useTheme();
+  const { t } = useLocale();
   const r = useRewardsStore((s) => s.profile);
   const hydrate = useRewardsStore((s) => s.hydrate);
 
@@ -17,12 +19,12 @@ export const RewardsPage: FC = () => {
     <div>
       <div style={{ marginBottom: 20 }}>
         <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>My Rewards</h2>
-        <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>Earn points for usage, referrals, and sales — updated in real time</p>
+        <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>{t.rewardsSubtitle}</p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 20 }}>
         <Card style={{ background: `linear-gradient(135deg, ${colors.card}, ${colors.accent}10)`, border: `1px solid ${colors.accent}25` }}>
-          <div style={{ fontSize: 12, color: colors.textMid, textTransform: "uppercase", marginBottom: 8 }}>Your Points</div>
+          <div style={{ fontSize: 12, color: colors.textMid, textTransform: "uppercase", marginBottom: 8 }}>{t.yourPoints}</div>
           <div style={{ fontSize: 36, fontWeight: 700, color: colors.accent, fontFamily: MONO, lineHeight: 1 }}>
             {r.points.toLocaleString()}
           </div>
@@ -42,7 +44,7 @@ export const RewardsPage: FC = () => {
         </Card>
 
         <Card>
-          <div style={{ fontSize: 12, color: colors.textMid, textTransform: "uppercase", marginBottom: 12 }}>How to Earn</div>
+          <div style={{ fontSize: 12, color: colors.textMid, textTransform: "uppercase", marginBottom: 12 }}>{t.howToEarn}</div>
           {[
             { a: "Close a renewal", p: "50 pts/device", i: "check" as const },
             { a: "Advance pipeline stage", p: "25 pts", i: "pipeline" as const },
@@ -62,10 +64,10 @@ export const RewardsPage: FC = () => {
 
       {/* Recent activity — live feed */}
       <Card>
-        <SectionHeader title="Points History" />
+        <SectionHeader title={t.pointsHistory} />
         {r.history.length === 0 && (
           <div style={{ padding: 20, textAlign: "center", fontSize: 13, color: colors.textMid }}>
-            No points history yet. Start earning by closing renewals!
+            {t.noPointsYet}
           </div>
         )}
         {r.history.map((h, i) => (

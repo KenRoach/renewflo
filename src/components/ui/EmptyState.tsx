@@ -71,7 +71,7 @@ export const EmptyState: FC<EmptyStateProps> = ({ icon, title, description, acti
             borderRadius: 8,
             border: "none",
             background: colors.accent,
-            color: "#fff",
+            color: colors.onAccent,
             fontSize: 12,
             fontWeight: 600,
             cursor: "pointer",

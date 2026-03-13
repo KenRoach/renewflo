@@ -151,6 +151,7 @@ export const NewPOModal: FC<NewPOModalProps> = ({ open, onClose, onSubmit }) => 
           </div>
           <button
             onClick={handleClose}
+            aria-label="Close"
             style={{
               background: "none",
               border: "none",
@@ -303,6 +304,7 @@ export const NewPOModal: FC<NewPOModalProps> = ({ open, onClose, onSubmit }) => 
                   <button
                     onClick={() => removeItem(idx)}
                     disabled={items.length <= 1}
+                    aria-label="Remove line item"
                     style={{
                       background: "none",
                       border: "none",
@@ -417,7 +419,7 @@ export const NewPOModal: FC<NewPOModalProps> = ({ open, onClose, onSubmit }) => 
               borderRadius: 10,
               border: "none",
               background: colors.accent,
-              color: "#fff",
+              color: colors.onAccent,
               fontSize: 13,
               fontWeight: 600,
               cursor: "pointer",

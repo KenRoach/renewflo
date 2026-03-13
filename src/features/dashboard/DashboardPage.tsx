@@ -34,7 +34,7 @@ const VarDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = (
           onClick={() => setPage("import")}
           style={{
             background: colors.accent,
-            color: "#fff",
+            color: colors.onAccent,
             border: "none",
             borderRadius: 10,
             padding: "10px 20px",
@@ -48,7 +48,7 @@ const VarDashboard: FC<{ assets: Asset[]; setPage: (page: PageId) => void }> = (
             boxShadow: `0 2px 8px ${colors.accent}40`,
           }}
         >
-          <Icon name="upload" size={16} color="#fff" /> {t.importAssets}
+          <Icon name="upload" size={16} color={colors.onAccent} /> {t.importAssets}
         </button>
       </div>
 

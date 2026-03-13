@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-export function Spinner({ size = 24, color = "#00B894" }: { size?: number; color?: string }) {
+export function Spinner({ size = 24, color = "#22c55e" }: { size?: number; color?: string }) {
   const style: CSSProperties = {
     width: size,
     height: size,
@@ -22,7 +22,7 @@ export function LoadingPage({ message = "Loading..." }: { message?: string }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 60, gap: 16 }}>
       <Spinner size={32} />
-      <span style={{ fontSize: 14, color: "#6B7794" }}>{message}</span>
+      <span style={{ fontSize: 14, color: "#94A3B8" }}>{message}</span>
     </div>
   );
 }

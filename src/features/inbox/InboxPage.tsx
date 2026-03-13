@@ -159,7 +159,7 @@ export const InboxPage: FC = () => {
         <div style={{ padding: "20px 20px 12px", borderBottom: `1px solid ${colors.border}` }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
             <div>
-              <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>Inbox</h2>
+              <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>{t.inbox}</h2>
               <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
                 {t.inboxSubtitle}
               </p>
@@ -168,7 +168,7 @@ export const InboxPage: FC = () => {
               onClick={handleNewCompose}
               style={{
                 background: colors.accent,
-                color: "#fff",
+                color: colors.onAccent,
                 border: "none",
                 borderRadius: 10,
                 padding: "10px 20px",
@@ -182,7 +182,7 @@ export const InboxPage: FC = () => {
                 boxShadow: `0 2px 8px ${colors.accent}40`,
               }}
             >
-              <Icon name="plus" size={14} color="#fff" /> Compose
+              <Icon name="plus" size={14} color={colors.onAccent} /> {t.compose}
             </button>
           </div>
 
@@ -191,7 +191,8 @@ export const InboxPage: FC = () => {
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search emails..."
+              aria-label="Search emails"
+              placeholder={t.searchEmails}
               style={{
                 width: "100%",
                 padding: "9px 12px 9px 36px",
@@ -220,7 +221,7 @@ export const InboxPage: FC = () => {
                     style={{
                       marginLeft: 4,
                       background: colors.accent,
-                      color: "#fff",
+                      color: colors.onAccent,
                       fontSize: 9,
                       fontWeight: 700,
                       borderRadius: 8,
@@ -241,7 +242,11 @@ export const InboxPage: FC = () => {
           {filtered.map((e) => (
             <div
               key={e.id}
+              role="button"
+              tabIndex={0}
+              aria-label={`Email: ${e.subject}`}
               onClick={() => handleSelect(e.id)}
+              onKeyDown={(ev) => { if (ev.key === "Enter") handleSelect(e.id); }}
               style={{
                 display: "flex",
                 alignItems: "flex-start",
@@ -320,6 +325,7 @@ export const InboxPage: FC = () => {
           <div style={{ padding: "20px 24px", borderBottom: `1px solid ${colors.border}`, display: "flex", alignItems: "flex-start", gap: 12 }}>
             <button
               onClick={() => setSelectedId(null)}
+              aria-label="Back to inbox"
               style={{ background: "none", border: "none", cursor: "pointer", padding: 4, borderRadius: 6, display: "flex", alignItems: "center", marginTop: 2 }}
             >
               <svg width={16} height={16} viewBox="0 0 24 24" fill={colors.textMid}><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" /></svg>
@@ -339,6 +345,7 @@ export const InboxPage: FC = () => {
             <div style={{ display: "flex", gap: 6 }}>
               <button
                 onClick={() => handleStar(selected.id)}
+                aria-label={selected.starred ? "Unstar" : "Star"}
                 title={selected.starred ? "Unstar" : "Star"}
                 style={{ background: "none", border: "none", cursor: "pointer", padding: 4, borderRadius: 6 }}
               >
@@ -348,7 +355,7 @@ export const InboxPage: FC = () => {
                 onClick={() => handleReply(selected)}
                 style={{
                   background: colors.accent,
-                  color: "#fff",
+                  color: colors.onAccent,
                   border: "none",
                   borderRadius: 8,
                   padding: "6px 14px",
@@ -361,7 +368,7 @@ export const InboxPage: FC = () => {
                   gap: 6,
                 }}
               >
-                <Icon name="send" size={12} color="#fff" /> Reply
+                <Icon name="send" size={12} color={colors.onAccent} /> {t.reply}
               </button>
             </div>
           </div>

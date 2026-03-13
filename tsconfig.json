@@ -22,5 +22,6 @@
     }
   },
   "include": ["src", "tests"],
+  "exclude": ["src/features/partner-portal"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

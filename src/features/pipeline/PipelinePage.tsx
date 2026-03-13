@@ -5,6 +5,7 @@ import { Icon } from "@/components/icons";
 import { urgencyColor, statusLabel, tierColor } from "@/utils";
 import type { Asset, AssetStatus, UserRole } from "@/types";
 import { useRewardsStore } from "@/stores";
+import { useLocale } from "@/i18n";
 
 interface PipelinePageProps {
   assets: Asset[];
@@ -140,6 +141,7 @@ const AssetDrawer: FC<{
 
 export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, userRole }) => {
   const { colors } = useTheme();
+  const { t } = useLocale();
 
   // ─── Local asset state for stage transitions ───
   const [localAssets, setLocalAssets] = useState<Asset[]>(initialAssets);
@@ -243,10 +245,10 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
     });
   }, [selectedStage, stageData, localAssets, clientFilter, search, sortField, sortDir]);
 
-  const heading = userRole === "delivery-partner" ? "Fulfillment Pipeline" : "Warranty Renewal Pipeline";
+  const heading = userRole === "delivery-partner" ? t.fulfillmentPipeline : t.pipeline;
   const subheading = userRole === "delivery-partner"
-    ? "Manage warranty fulfillment workflow"
-    : "Manage and advance warranty renewals through each stage";
+    ? t.manageFulfillment
+    : t.manageRenewals;
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -283,18 +285,18 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
           }}
         >
           <Icon name="refresh" size={13} color={colors.textMid} />
-          Reset
+          {t.reset}
         </button>
       </div>
 
       {/* Summary Metrics */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12 }}>
         {[
-          { label: "Total Devices", value: String(totalDevices), color: colors.text },
-          { label: "Active Pipeline", value: `$${activeValue.toLocaleString()}`, color: colors.blue },
-          { label: "In Progress", value: String(activeCount), color: colors.warn },
-          { label: "Fulfilled", value: String(fulfilledCount), color: colors.accent },
-          { label: "Lapsed", value: String(lapsedCount), color: colors.danger },
+          { label: t.totalDevicesLabel, value: String(totalDevices), color: colors.text },
+          { label: t.activePipeline, value: `$${activeValue.toLocaleString()}`, color: colors.blue },
+          { label: t.inProgress, value: String(activeCount), color: colors.warn },
+          { label: t.fulfilled, value: String(fulfilledCount), color: colors.accent },
+          { label: t.lapsed, value: String(lapsedCount), color: colors.danger },
         ].map((m, i) => (
           <Card key={i} style={{ textAlign: "center", padding: "14px 10px" }}>
             <div style={{ fontSize: 10, color: colors.textMid, textTransform: "uppercase", marginBottom: 4, fontWeight: 600, letterSpacing: "0.04em" }}>{m.label}</div>
@@ -345,6 +347,9 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
             return (
               <div
                 key={s.key}
+                role="button"
+                tabIndex={0}
+                aria-label={`${s.label}: ${s.count} devices`}
                 title={`${s.label}: ${s.count} devices — $${s.value.toLocaleString()}`}
                 style={{
                   width: `${pct}%`, minWidth: pct > 0 ? 4 : 0, background: s.color,
@@ -352,6 +357,7 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
                   opacity: selectedStage && selectedStage !== s.key ? 0.35 : 1,
                 }}
                 onClick={() => setSelectedStage(s.key === selectedStage ? null : s.key)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setSelectedStage(s.key === selectedStage ? null : s.key); }}
               />
             );
           })}
@@ -372,7 +378,8 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search devices, serial, client..."
+          aria-label="Search devices"
+          placeholder={t.searchDevices}
           style={{
             flex: 1, minWidth: 200, padding: "8px 12px", borderRadius: 8,
             border: `1px solid ${colors.border}`, background: colors.inputBg,
@@ -380,7 +387,7 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
           }}
         />
         <select value={clientFilter} onChange={(e) => setClientFilter(e.target.value)} style={selectStyle}>
-          <option value="all">All Clients</option>
+          <option value="all">{t.allClients}</option>
           {clients.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       </div>
@@ -417,7 +424,7 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
             <tbody>
               {filteredAssets.length === 0 && (
                 <tr>
-                  <td colSpan={7} style={{ padding: 32, textAlign: "center", color: colors.textDim }}>No devices found</td>
+                  <td colSpan={7} style={{ padding: 32, textAlign: "center", color: colors.textDim }}>{t.noDevicesFound}</td>
                 </tr>
               )}
               {filteredAssets.map((a) => {
@@ -477,7 +484,7 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
 
       {/* Client breakdown */}
       <Card>
-        <SectionHeader title="Pipeline by Client" />
+        <SectionHeader title={t.pipelineByClient} />
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
           {(() => {
             const clientMap: Record<string, { count: number; value: number; stages: Record<string, number> }> = {};
@@ -494,6 +501,9 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
               .map(([client, data]) => (
                 <div
                   key={client}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Filter by ${client}`}
                   style={{
                     display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", borderRadius: 8,
                     background: clientFilter === client ? `${colors.accent}08` : "transparent",
@@ -501,6 +511,7 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
                     cursor: "pointer", transition: "all 0.15s",
                   }}
                   onClick={() => setClientFilter(clientFilter === client ? "all" : client)}
+                  onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setClientFilter(clientFilter === client ? "all" : client); }}
                 >
                   <Badge color={colors.accent}>{data.count}</Badge>
                   <div style={{ flex: 1 }}>
@@ -532,7 +543,11 @@ export const PipelinePage: FC<PipelinePageProps> = ({ assets: initialAssets, use
       {selectedAsset && (
         <>
           <div
+            role="button"
+            tabIndex={-1}
+            aria-label="Close detail panel"
             onClick={() => setSelectedAsset(null)}
+            onKeyDown={(e) => { if (e.key === "Escape") setSelectedAsset(null); }}
             style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.3)", zIndex: 999 }}
           />
           <AssetDrawer

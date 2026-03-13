@@ -15,7 +15,7 @@ import { SettingsPage } from "@/features/settings";
 import { HowItWorksPage } from "@/features/how-it-works";
 import { ChatPanel } from "@/features/chat";
 import { LoginPage } from "@/features/auth";
-import { PageTransition } from "@/components/ui";
+import { ErrorBoundary, PageTransition } from "@/components/ui";
 import type { Asset, PageId, UserRole } from "@/types";
 import { useAssetStore, useAuthStore } from "@/stores";
 import { PURCHASE_ORDERS } from "@/data/seeds";
@@ -185,7 +185,9 @@ export default function App() {
           />
 
           <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
-            <PageTransition pageKey={page}>{renderPage()}</PageTransition>
+            <ErrorBoundary>
+              <PageTransition pageKey={page}>{renderPage()}</PageTransition>
+            </ErrorBoundary>
           </div>
         </div>
       </LocaleContext.Provider>

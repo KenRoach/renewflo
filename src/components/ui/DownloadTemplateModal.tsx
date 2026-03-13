@@ -204,7 +204,7 @@ export const DownloadTemplateModal: FC<DownloadTemplateModalProps> = ({
               borderRadius: 10,
               border: "none",
               background: colors.accent,
-              color: "#fff",
+              color: colors.onAccent,
               fontSize: 13,
               fontWeight: 600,
               cursor: "pointer",

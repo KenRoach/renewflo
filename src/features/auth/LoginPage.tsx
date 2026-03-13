@@ -215,7 +215,7 @@ export const LoginPage: FC = () => {
                 onClick={() => switchMode("login")}
                 style={{
                   background: colors.accent,
-                  color: "#fff",
+                  color: colors.onAccent,
                   border: "none",
                   borderRadius: 10,
                   padding: "12px 32px",
@@ -522,7 +522,7 @@ export const LoginPage: FC = () => {
                     disabled={isLoading || passwordMismatch}
                     style={{
                       background: isLoading || passwordMismatch ? colors.textDim : colors.accent,
-                      color: "#fff",
+                      color: colors.onAccent,
                       border: "none",
                       borderRadius: 10,
                       padding: "12px 20px",

@@ -126,6 +126,7 @@ export const HowItWorksModal: FC<HowItWorksModalProps> = ({ open, onClose }) => 
           </div>
           <button
             onClick={onClose}
+            aria-label="Close"
             style={{
               background: "none",
               border: "none",
@@ -173,7 +174,7 @@ export const HowItWorksModal: FC<HowItWorksModalProps> = ({ open, onClose }) => 
                     height: 16,
                     borderRadius: "50%",
                     background: colors.accent,
-                    color: "#fff",
+                    color: colors.onAccent,
                     fontSize: 9,
                     fontWeight: 700,
                     display: "flex",
@@ -206,7 +207,7 @@ export const HowItWorksModal: FC<HowItWorksModalProps> = ({ open, onClose }) => 
               borderRadius: 10,
               border: "none",
               background: colors.accent,
-              color: "#fff",
+              color: colors.onAccent,
               fontSize: 13,
               fontWeight: 600,
               cursor: "pointer",

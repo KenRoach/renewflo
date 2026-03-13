@@ -358,9 +358,9 @@ export const SettingsPage: FC = () => {
             fontFamily: FONT,
             fontSize: 13,
             fontWeight: 600,
-            background: saved ? "#16a34a" : colors.accent,
-            color: "#fff",
-            boxShadow: `0 2px 8px ${saved ? "#16a34a40" : colors.accent + "40"}`,
+            background: saved ? colors.success : colors.accent,
+            color: colors.onAccent,
+            boxShadow: `0 2px 8px ${saved ? colors.successDim : colors.accent + "40"}`,
             transition: "all 0.2s",
             display: "flex",
             alignItems: "center",
@@ -369,7 +369,7 @@ export const SettingsPage: FC = () => {
         >
           {saved ? (
             <>
-              <Icon name="check" size={14} color="#fff" />
+              <Icon name="check" size={14} color={colors.onAccent} />
               {t.saved}
             </>
           ) : (

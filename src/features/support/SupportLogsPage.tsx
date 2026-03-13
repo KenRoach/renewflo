@@ -66,7 +66,7 @@ export const SupportLogsPage: FC<SupportLogsPageProps> = ({ userRole = "var" }) 
             onClick={() => setShowNewTicket(true)}
             style={{
               background: colors.accent,
-              color: "#fff",
+              color: colors.onAccent,
               border: "none",
               borderRadius: 10,
               padding: "10px 20px",

@@ -134,7 +134,7 @@ export const HowItWorksPage: FC = () => {
                   height: 16,
                   borderRadius: "50%",
                   background: colors.accent,
-                  color: "#fff",
+                  color: colors.onAccent,
                   fontSize: 9,
                   fontWeight: 700,
                   display: "flex",

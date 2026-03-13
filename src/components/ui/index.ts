@@ -1,4 +1,5 @@
 export { Badge } from "./Badge";
+export { ErrorBoundary } from "./ErrorBoundary";
 export { Card } from "./Card";
 export { EmptyState } from "./EmptyState";
 export { MetricCard } from "./MetricCard";

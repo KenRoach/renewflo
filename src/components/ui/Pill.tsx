@@ -34,7 +34,7 @@ export const Pill: FC<PillProps> = ({ active, children, onClick, count }) => {
         <span
           style={{
             background: active ? colors.accent : colors.textDim,
-            color: "#fff",
+            color: colors.onAccent,
             borderRadius: 10,
             padding: "1px 6px",
             fontSize: 10,

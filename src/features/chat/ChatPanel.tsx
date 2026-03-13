@@ -91,6 +91,7 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose, assets, user, ord
         <span style={{ fontSize: 13, fontWeight: 600, color: colors.text, flex: 1 }}>RenewFlow AI</span>
         <button
           onClick={onClose}
+          aria-label="Close chat"
           style={{
             background: colors.inputBg,
             border: `1px solid ${colors.border}`,
@@ -120,7 +121,7 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose, assets, user, ord
               padding: "8px 12px",
               borderRadius: 10,
               background: m.role === "user" ? colors.accent : m.role === "system" ? `${colors.purple}14` : colors.card,
-              color: m.role === "user" ? "#fff" : colors.text,
+              color: m.role === "user" ? colors.onAccent : colors.text,
               fontSize: 12,
               lineHeight: 1.55,
               whiteSpace: "pre-wrap",
@@ -174,6 +175,7 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose, assets, user, ord
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
+          aria-label="Chat message"
           placeholder={loading ? t.waitingPlaceholder : t.messagePlaceholder}
           disabled={loading}
           style={{
@@ -191,6 +193,7 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose, assets, user, ord
         />
         <button
           onClick={send}
+          aria-label="Send message"
           disabled={loading}
           style={{
             background: loading ? colors.textDim : colors.accent,
@@ -203,7 +206,7 @@ export const ChatPanel: FC<ChatPanelProps> = ({ open, onClose, assets, user, ord
             cursor: loading ? "not-allowed" : "pointer",
           }}
         >
-          <Icon name="send" size={14} color="#fff" />
+          <Icon name="send" size={14} color={colors.onAccent} />
         </button>
       </div>
     </div>

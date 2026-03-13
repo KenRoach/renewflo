@@ -9,6 +9,9 @@ export interface ColorTokens {
   accent: string;
   accentDim: string;
   accentGlow: string;
+  onAccent: string;
+  success: string;
+  successDim: string;
   warn: string;
   warnDim: string;
   danger: string;
@@ -34,6 +37,9 @@ export const LIGHT: ColorTokens = {
   accent: "#2563EB",
   accentDim: "#2563EB10",
   accentGlow: "#2563EB40",
+  onAccent: "#FFFFFF",
+  success: "#16a34a",
+  successDim: "#16a34a14",
   warn: "#E8890C",
   warnDim: "#E8890C12",
   danger: "#DC2626",
@@ -59,6 +65,9 @@ export const DARK: ColorTokens = {
   accent: "#3B82F6",
   accentDim: "#3B82F614",
   accentGlow: "#3B82F640",
+  onAccent: "#FFFFFF",
+  success: "#22c55e",
+  successDim: "#22c55e14",
   warn: "#F59E0B",
   warnDim: "#F59E0B14",
   danger: "#EF4444",

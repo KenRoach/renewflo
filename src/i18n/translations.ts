@@ -155,6 +155,73 @@ export interface Translations {
   noOrdersDesc: string;
   noEmailsTitle: string;
   noEmailsDesc: string;
+  // Inbox tabs & actions
+  compose: string;
+  searchEmails: string;
+  all: string;
+  received: string;
+  sent: string;
+  promos: string;
+  starred: string;
+  reply: string;
+  // Orders
+  draft: string;
+  pendingApprovalStatus: string;
+  submitted: string;
+  acknowledged: string;
+  cancelled: string;
+  poPipeline: string;
+  submittedToVendor: string;
+  loadingPOs: string;
+  noOrdersMatch: string;
+  // Import
+  uploadSubtitle: string;
+  dropFileHere: string;
+  dragDropFile: string;
+  orClickBrowse: string;
+  mapColumns: string;
+  matchColumns: string;
+  back: string;
+  previewImport: string;
+  importMore: string;
+  goToDashboard: string;
+  assetsImported: string;
+  trackingMessage: string;
+  required: string;
+  selectColumn: string;
+  // Quoter
+  downloadPdf: string;
+  sendQuote: string;
+  newQuote: string;
+  fromAssets: string;
+  lineItems: string;
+  totalTpm: string;
+  totalOem: string;
+  savings: string;
+  savingsPercent: string;
+  selectDevices: string;
+  buildCustomQuote: string;
+  // Rewards
+  yourPoints: string;
+  level: string;
+  next: string;
+  howToEarn: string;
+  pointsHistory: string;
+  noPointsYet: string;
+  earnByClosing: string;
+  rewardsSubtitle: string;
+  // Pipeline extras
+  totalDevicesLabel: string;
+  activePipeline: string;
+  inProgress: string;
+  reset: string;
+  searchDevices: string;
+  allClients: string;
+  noDevicesFound: string;
+  pipelineByClient: string;
+  fulfillmentPipeline: string;
+  manageFulfillment: string;
+  manageRenewals: string;
   // Common
   loading: string;
   darkMode: string;
@@ -286,6 +353,67 @@ export const translations: Record<Locale, Translations> = {
     noOrdersDesc: "Generate a quote and convert it to a purchase order to get started.",
     noEmailsTitle: "Your inbox is empty",
     noEmailsDesc: "Send your first email to a customer or partner to start communicating.",
+    compose: "Compose",
+    searchEmails: "Search emails...",
+    all: "All",
+    received: "Received",
+    sent: "Sent",
+    promos: "Promos",
+    starred: "Starred",
+    reply: "Reply",
+    draft: "Draft",
+    pendingApprovalStatus: "Pending Approval",
+    submitted: "Submitted",
+    acknowledged: "Acknowledged",
+    cancelled: "Cancelled",
+    poPipeline: "PO Pipeline",
+    submittedToVendor: "Submitted to Vendor",
+    loadingPOs: "Loading purchase orders...",
+    noOrdersMatch: "No purchase orders match this filter.",
+    uploadSubtitle: "Upload your installed base from Excel or CSV",
+    dropFileHere: "Drop your file here",
+    dragDropFile: "Drag & drop your Excel or CSV file",
+    orClickBrowse: "or click to browse",
+    mapColumns: "Map Your Columns",
+    matchColumns: "match columns to RenewFlow fields",
+    back: "Back",
+    previewImport: "Preview Import",
+    importMore: "Import More",
+    goToDashboard: "Go to Dashboard",
+    assetsImported: "Assets Imported",
+    trackingMessage: "RenewFlow will track warranty expirations and send alerts automatically.",
+    required: "required",
+    selectColumn: "— Select column —",
+    downloadPdf: "Download PDF",
+    sendQuote: "Send Quote",
+    newQuote: "New Quote",
+    fromAssets: "From Assets",
+    lineItems: "Line Items",
+    totalTpm: "Total TPM",
+    totalOem: "Total OEM",
+    savings: "Savings",
+    savingsPercent: "Savings %",
+    selectDevices: "Select devices from your installed base",
+    buildCustomQuote: "Build a custom quote with brand and model selection",
+    yourPoints: "Your Points",
+    level: "Level",
+    next: "Next",
+    howToEarn: "How to Earn",
+    pointsHistory: "Points History",
+    noPointsYet: "No points history yet. Start earning by closing renewals!",
+    earnByClosing: "Start earning by closing renewals!",
+    rewardsSubtitle: "Earn points for usage, referrals, and sales — updated in real time",
+    totalDevicesLabel: "Total Devices",
+    activePipeline: "Active Pipeline",
+    inProgress: "In Progress",
+    reset: "Reset",
+    searchDevices: "Search devices, serial, client...",
+    allClients: "All Clients",
+    noDevicesFound: "No devices found",
+    pipelineByClient: "Pipeline by Client",
+    fulfillmentPipeline: "Fulfillment Pipeline",
+    manageFulfillment: "Manage warranty fulfillment workflow",
+    manageRenewals: "Manage and advance warranty renewals through each stage",
     loading: "Loading...",
     darkMode: "Dark mode",
     lightMode: "Light mode",
@@ -414,6 +542,67 @@ export const translations: Record<Locale, Translations> = {
     noOrdersDesc: "Genera una cotización y conviértela en una orden de compra para comenzar.",
     noEmailsTitle: "Tu bandeja está vacía",
     noEmailsDesc: "Envía tu primer correo a un cliente o socio para comenzar a comunicarte.",
+    compose: "Redactar",
+    searchEmails: "Buscar correos...",
+    all: "Todos",
+    received: "Recibidos",
+    sent: "Enviados",
+    promos: "Promos",
+    starred: "Destacados",
+    reply: "Responder",
+    draft: "Borrador",
+    pendingApprovalStatus: "Pendiente de Aprobación",
+    submitted: "Enviado",
+    acknowledged: "Confirmado",
+    cancelled: "Cancelado",
+    poPipeline: "Pipeline de OC",
+    submittedToVendor: "Enviado al Proveedor",
+    loadingPOs: "Cargando órdenes de compra...",
+    noOrdersMatch: "No hay órdenes de compra que coincidan con este filtro.",
+    uploadSubtitle: "Sube tu base instalada desde Excel o CSV",
+    dropFileHere: "Suelta tu archivo aquí",
+    dragDropFile: "Arrastra y suelta tu archivo Excel o CSV",
+    orClickBrowse: "o haz clic para explorar",
+    mapColumns: "Mapear Columnas",
+    matchColumns: "asocia columnas con campos de RenewFlow",
+    back: "Atrás",
+    previewImport: "Vista Previa",
+    importMore: "Importar Más",
+    goToDashboard: "Ir al Panel",
+    assetsImported: "Activos Importados",
+    trackingMessage: "RenewFlow rastreará los vencimientos de garantía y enviará alertas automáticamente.",
+    required: "requerido",
+    selectColumn: "— Seleccionar columna —",
+    downloadPdf: "Descargar PDF",
+    sendQuote: "Enviar Cotización",
+    newQuote: "Nueva Cotización",
+    fromAssets: "Desde Activos",
+    lineItems: "Líneas",
+    totalTpm: "Total TPM",
+    totalOem: "Total OEM",
+    savings: "Ahorro",
+    savingsPercent: "% Ahorro",
+    selectDevices: "Selecciona dispositivos de tu base instalada",
+    buildCustomQuote: "Crea una cotización personalizada con marca y modelo",
+    yourPoints: "Tus Puntos",
+    level: "Nivel",
+    next: "Siguiente",
+    howToEarn: "Cómo Ganar",
+    pointsHistory: "Historial de Puntos",
+    noPointsYet: "Sin historial de puntos. ¡Comienza ganando cerrando renovaciones!",
+    earnByClosing: "¡Comienza ganando cerrando renovaciones!",
+    rewardsSubtitle: "Gana puntos por uso, referidos y ventas — actualizado en tiempo real",
+    totalDevicesLabel: "Total Dispositivos",
+    activePipeline: "Pipeline Activo",
+    inProgress: "En Progreso",
+    reset: "Reiniciar",
+    searchDevices: "Buscar dispositivos, serial, cliente...",
+    allClients: "Todos los Clientes",
+    noDevicesFound: "No se encontraron dispositivos",
+    pipelineByClient: "Pipeline por Cliente",
+    fulfillmentPipeline: "Pipeline de Cumplimiento",
+    manageFulfillment: "Gestionar flujo de cumplimiento de garantías",
+    manageRenewals: "Gestionar y avanzar renovaciones de garantía en cada etapa",
     loading: "Cargando...",
     darkMode: "Modo oscuro",
     lightMode: "Modo claro",
@@ -542,6 +731,67 @@ export const translations: Record<Locale, Translations> = {
     noOrdersDesc: "Gere uma cotação e converta-a em um pedido de compra para começar.",
     noEmailsTitle: "Sua caixa de entrada está vazia",
     noEmailsDesc: "Envie seu primeiro email para um cliente ou parceiro para começar a se comunicar.",
+    compose: "Redigir",
+    searchEmails: "Buscar emails...",
+    all: "Todos",
+    received: "Recebidos",
+    sent: "Enviados",
+    promos: "Promos",
+    starred: "Favoritos",
+    reply: "Responder",
+    draft: "Rascunho",
+    pendingApprovalStatus: "Pendente de Aprovação",
+    submitted: "Enviado",
+    acknowledged: "Confirmado",
+    cancelled: "Cancelado",
+    poPipeline: "Pipeline de OC",
+    submittedToVendor: "Enviado ao Fornecedor",
+    loadingPOs: "Carregando pedidos de compra...",
+    noOrdersMatch: "Nenhum pedido de compra corresponde a este filtro.",
+    uploadSubtitle: "Faça upload da sua base instalada em Excel ou CSV",
+    dropFileHere: "Solte seu arquivo aqui",
+    dragDropFile: "Arraste e solte seu arquivo Excel ou CSV",
+    orClickBrowse: "ou clique para buscar",
+    mapColumns: "Mapear Colunas",
+    matchColumns: "associe colunas aos campos do RenewFlow",
+    back: "Voltar",
+    previewImport: "Pré-visualização",
+    importMore: "Importar Mais",
+    goToDashboard: "Ir ao Painel",
+    assetsImported: "Ativos Importados",
+    trackingMessage: "O RenewFlow rastreará os vencimentos de garantia e enviará alertas automaticamente.",
+    required: "obrigatório",
+    selectColumn: "— Selecionar coluna —",
+    downloadPdf: "Baixar PDF",
+    sendQuote: "Enviar Cotação",
+    newQuote: "Nova Cotação",
+    fromAssets: "Dos Ativos",
+    lineItems: "Itens",
+    totalTpm: "Total TPM",
+    totalOem: "Total OEM",
+    savings: "Economia",
+    savingsPercent: "% Economia",
+    selectDevices: "Selecione dispositivos da sua base instalada",
+    buildCustomQuote: "Crie uma cotação personalizada com marca e modelo",
+    yourPoints: "Seus Pontos",
+    level: "Nível",
+    next: "Próximo",
+    howToEarn: "Como Ganhar",
+    pointsHistory: "Histórico de Pontos",
+    noPointsYet: "Sem histórico de pontos. Comece ganhando fechando renovações!",
+    earnByClosing: "Comece ganhando fechando renovações!",
+    rewardsSubtitle: "Ganhe pontos por uso, indicações e vendas — atualizado em tempo real",
+    totalDevicesLabel: "Total Dispositivos",
+    activePipeline: "Pipeline Ativo",
+    inProgress: "Em Progresso",
+    reset: "Resetar",
+    searchDevices: "Buscar dispositivos, serial, cliente...",
+    allClients: "Todos os Clientes",
+    noDevicesFound: "Nenhum dispositivo encontrado",
+    pipelineByClient: "Pipeline por Cliente",
+    fulfillmentPipeline: "Pipeline de Entrega",
+    manageFulfillment: "Gerenciar fluxo de entrega de garantias",
+    manageRenewals: "Gerenciar e avançar renovações de garantia em cada etapa",
     loading: "Carregando...",
     darkMode: "Modo escuro",
     lightMode: "Modo claro",

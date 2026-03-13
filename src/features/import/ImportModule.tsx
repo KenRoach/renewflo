@@ -6,6 +6,7 @@ import { Badge, Card, DownloadTemplateModal } from "@/components/ui";
 import { IMPORT_FIELD_DEFINITIONS, SAMPLE_TEMPLATE_ROWS } from "@/data/seeds";
 import type { Asset, ImportStep, ColumnMapping, AssetTier, AssetStatus } from "@/types";
 import { useRewardsStore } from "@/stores";
+import { useLocale } from "@/i18n";
 
 interface ImportModuleProps {
   onImport: (assets: Asset[] | null) => void;
@@ -13,6 +14,7 @@ interface ImportModuleProps {
 
 export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
   const { colors } = useTheme();
+  const { t } = useLocale();
   const addPoints = useRewardsStore((s) => s.addPoints);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<ImportStep>("upload");
@@ -148,14 +150,14 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>Import Assets</h2>
-            <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>Upload your installed base from Excel or CSV</p>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>{t.importAssets}</h2>
+            <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>{t.uploadSubtitle}</p>
           </div>
           <button
             onClick={() => setShowTemplateModal(true)}
             style={{
               background: colors.accent,
-              color: "#fff",
+              color: colors.onAccent,
               border: "none",
               borderRadius: 10,
               padding: "10px 20px",
@@ -169,7 +171,7 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
               boxShadow: `0 2px 8px ${colors.accent}40`,
             }}
           >
-            <Icon name="download" size={14} color="#fff" /> Download Template
+            <Icon name="download" size={14} color={colors.onAccent} /> {t.downloadTemplate}
           </button>
         </div>
         <div
@@ -199,10 +201,10 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
             <Icon name="upload" size={28} color={colors.accent} />
           </div>
           <div style={{ fontSize: 15, fontWeight: 600, color: colors.text, marginBottom: 6 }}>
-            {dragOver ? "Drop your file here" : "Drag & drop your Excel or CSV file"}
+            {dragOver ? t.dropFileHere : t.dragDropFile}
           </div>
           <div style={{ fontSize: 13, color: colors.textMid, marginBottom: 16 }}>
-            or click to browse &middot; .xlsx, .xls, .csv
+            {t.orClickBrowse} &middot; .xlsx, .xls, .csv
           </div>
           {error && <div style={{ fontSize: 13, color: colors.danger, marginTop: 8 }}>{error}</div>}
         </div>
@@ -242,10 +244,10 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>Map Your Columns</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>{t.mapColumns}</h2>
             <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
               <span style={{ fontFamily: MONO, fontSize: 12, color: colors.accent }}>{fileName}</span> &middot;{" "}
-              {rawData?.length ?? 0} rows &middot; match columns to RenewFlow fields
+              {rawData?.length ?? 0} rows &middot; {t.matchColumns}
             </p>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
@@ -267,14 +269,14 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
                 boxShadow: colors.shadow,
               }}
             >
-              Back
+              {t.back}
             </button>
             <button
               onClick={processMappedData}
               disabled={!ok}
               style={{
                 background: ok ? colors.accent : colors.textDim,
-                color: "#fff",
+                color: colors.onAccent,
                 border: "none",
                 borderRadius: 10,
                 padding: "10px 20px",
@@ -314,7 +316,7 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: colors.text }}>{f.label}</span>
-                {f.required && <Badge color={colors.danger}>required</Badge>}
+                {f.required && <Badge color={colors.danger}>{t.required}</Badge>}
                 {mapping[f.key] !== undefined && <Icon name="check" size={14} color={colors.accent} />}
               </div>
               <div style={{ fontSize: 11, color: colors.textMid, marginBottom: 8 }}>{f.hint}</div>
@@ -341,7 +343,7 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
                   cursor: "pointer",
                 }}
               >
-                <option value="">— Select column —</option>
+                <option value="">{t.selectColumn}</option>
                 {headers.map((h, i) => (
                   <option key={i} value={i}>
                     {h} (col {i + 1})
@@ -370,7 +372,7 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>Preview Import</h2>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: colors.text, margin: 0 }}>{t.previewImport}</h2>
             <p style={{ fontSize: 13, color: colors.textMid, margin: "4px 0 0" }}>
               {parsedAssets.length} assets ({totalUnits} units) ready
             </p>
@@ -394,13 +396,13 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
                 boxShadow: colors.shadow,
               }}
             >
-              Back
+              {t.back}
             </button>
             <button
               onClick={() => { onImport(parsedAssets); setStep("done"); addPoints(`Imported ${parsedAssets.length} assets`, 10); }}
               style={{
                 background: colors.accent,
-                color: "#fff",
+                color: colors.onAccent,
                 border: "none",
                 borderRadius: 10,
                 padding: "10px 20px",
@@ -414,7 +416,7 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
                 boxShadow: `0 2px 8px ${colors.accent}40`,
               }}
             >
-              <Icon name="check" size={14} color="#fff" /> Import {parsedAssets.length} Assets
+              <Icon name="check" size={14} color={colors.onAccent} /> Import {parsedAssets.length} Assets
             </button>
           </div>
         </div>
@@ -461,10 +463,10 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
         <Icon name="check" size={32} color={colors.accent} />
       </div>
       <h2 style={{ fontSize: 20, fontWeight: 700, color: colors.text, margin: "0 0 8px" }}>
-        {parsedAssets.length} Assets Imported
+        {parsedAssets.length} {t.assetsImported}
       </h2>
       <p style={{ fontSize: 14, color: colors.textMid, marginBottom: 24 }}>
-        RenewFlow will track warranty expirations and send alerts automatically.
+        {t.trackingMessage}
       </p>
       <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
         <button
@@ -485,13 +487,13 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
             boxShadow: colors.shadow,
           }}
         >
-          Import More
+          {t.importMore}
         </button>
         <button
           onClick={() => onImport(null)}
           style={{
             background: colors.accent,
-            color: "#fff",
+            color: colors.onAccent,
             border: "none",
             borderRadius: 10,
             padding: "10px 20px",
@@ -505,7 +507,7 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
             boxShadow: `0 2px 8px ${colors.accent}40`,
           }}
         >
-          Go to Dashboard
+          {t.goToDashboard}
         </button>
       </div>
     </div>

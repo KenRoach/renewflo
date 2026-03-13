@@ -301,7 +301,7 @@ export const Sidebar: FC<SidebarProps> = ({
             justifyContent: "center",
             fontSize: 10,
             fontWeight: 700,
-            color: "#fff",
+            color: colors.onAccent,
           }}
         >
           {initials}
@@ -317,6 +317,7 @@ export const Sidebar: FC<SidebarProps> = ({
         {onLogout && (
           <button
             onClick={onLogout}
+            aria-label={t.signOut}
             title={t.signOut}
             style={{
               background: "none",

@@ -61,7 +61,7 @@ export const OrdersPage: FC<OrdersPageProps> = ({ userRole = "var" }) => {
   if (loading) {
     return (
       <div style={{ padding: 40, textAlign: "center", color: colors.textMid, fontSize: 14 }}>
-        Loading purchase orders...
+        {t.loadingPOs}
       </div>
     );
   }
@@ -97,7 +97,7 @@ export const OrdersPage: FC<OrdersPageProps> = ({ userRole = "var" }) => {
             onClick={() => setShowNewPO(true)}
             style={{
               background: colors.accent,
-              color: "#fff",
+              color: colors.onAccent,
               border: "none",
               borderRadius: 10,
               padding: "10px 20px",
@@ -111,7 +111,7 @@ export const OrdersPage: FC<OrdersPageProps> = ({ userRole = "var" }) => {
               boxShadow: `0 2px 8px ${colors.accent}40`,
             }}
           >
-            <Icon name="plus" size={14} color="#fff" /> {t.newPO}
+            <Icon name="plus" size={14} color={colors.onAccent} /> {t.newPO}
           </button>
         )}
       </div>
@@ -187,14 +187,14 @@ export const OrdersPage: FC<OrdersPageProps> = ({ userRole = "var" }) => {
             <Card style={{ textAlign: "center", padding: 40 }}>
               <Icon name="order" size={32} color={colors.textDim} />
               <div style={{ fontSize: 14, color: colors.textMid, marginTop: 12 }}>
-                No purchase orders match this filter.
+                {t.noOrdersMatch}
               </div>
             </Card>
           )}
 
           {/* Summary */}
           <Card style={{ marginTop: 16 }}>
-            <SectionHeader title="PO Pipeline" />
+            <SectionHeader title={t.poPipeline} />
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {(
                 [

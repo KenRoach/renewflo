@@ -136,7 +136,7 @@ export function SignupPage({ onSwitchToLogin }: { onSwitchToLogin: () => void })
               padding: "12px 0",
               borderRadius: 8,
               background: colors.accent,
-              color: "#fff",
+              color: colors.onAccent,
               fontWeight: 600,
               fontSize: 15,
               border: "none",

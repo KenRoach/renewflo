@@ -256,7 +256,7 @@ export const NewTicketModal: FC<NewTicketModalProps> = ({ open, onClose, onSubmi
               borderRadius: 10,
               border: "none",
               background: canSubmit ? colors.accent : colors.textDim,
-              color: "#fff",
+              color: colors.onAccent,
               fontSize: 13,
               fontWeight: 600,
               cursor: canSubmit ? "pointer" : "not-allowed",

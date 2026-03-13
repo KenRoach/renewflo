@@ -150,7 +150,7 @@ export const QuoterPage: FC<QuoterPageProps> = ({ assets }) => {
   // ── Button style helpers ──
   const primaryBtn: React.CSSProperties = {
     background: colors.accent,
-    color: "#fff",
+    color: colors.onAccent,
     border: "none",
     borderRadius: 10,
     padding: "10px 20px",
@@ -400,7 +400,7 @@ export const QuoterPage: FC<QuoterPageProps> = ({ assets }) => {
               <div style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>
                 <Icon name="inbox" size={14} color={colors.accent} /> Send Quote via Email
               </div>
-              <button onClick={() => setShowEmailModal(false)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
+              <button onClick={() => setShowEmailModal(false)} aria-label="Close" style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}>
                 <Icon name="close" size={14} color={colors.textMid} />
               </button>
             </div>
@@ -952,6 +952,7 @@ export const QuoterPage: FC<QuoterPageProps> = ({ assets }) => {
                   {lineItems.length > 1 ? (
                     <button
                       onClick={() => removeLine(idx)}
+                      aria-label="Remove line"
                       style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex", alignItems: "center", justifyContent: "center" }}
                     >
                       <Icon name="close" size={13} color={colors.danger} />
