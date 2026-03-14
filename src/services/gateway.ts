@@ -396,6 +396,38 @@ export const users = {
   },
 };
 
+// ─── Quote Display Types ───
+
+export interface QuoteResult {
+  quoteId: string;
+  date: string;
+  coverageType: "tpm" | "oem";
+  deviceCount: number;
+  clients: string[];
+  items: {
+    assetId: string;
+    brand: string;
+    model: string;
+    serial: string;
+    client: string;
+    deviceType: string;
+    tier: string;
+    daysLeft: number;
+    tpmPrice: number;
+    oemPrice: number | null;
+    selectedCoverage: "tpm" | "oem";
+    lineTotal: number;
+  }[];
+  summary: {
+    totalTPM: number;
+    totalOEM: number;
+    selectedTotal: number;
+    savings: number;
+    savingsPct: number;
+  };
+  status: string;
+}
+
 // ─── Auth (Railway API) ───
 
 export interface LoginResponse {

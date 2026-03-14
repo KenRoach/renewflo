@@ -1,7 +1,7 @@
 // ─── RenewFlow Branded Quote PDF Generator ───
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-import type { QuoteResult } from "@/services/api";
+import type { QuoteResult } from "@/services/gateway";
 
 // Brand colors
 const ACCENT = "#2563EB";

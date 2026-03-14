@@ -3,7 +3,7 @@ import { useTheme, MONO, FONT } from "@/theme";
 import { Icon } from "@/components/icons";
 import { Badge, Card, SectionHeader } from "@/components/ui";
 import { tierColor, urgencyColor, generateQuotePdf } from "@/utils";
-import type { QuoteResult } from "@/services/api";
+import type { QuoteResult } from "@/services/gateway";
 import { useRewardsStore, useQuotesStore } from "@/stores";
 import type { Asset } from "@/types";
 
