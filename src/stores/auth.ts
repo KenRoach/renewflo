@@ -1,6 +1,5 @@
 // ─── Auth Store ───
-// Zustand store for authentication state (email/password via Kitz Gateway)
-// Falls back to local-only auth when gateway is unreachable (frictionless demo)
+// Zustand store for authentication state via RenewFlow API (Supabase Auth)
 
 import { create } from "zustand";
 import type { AuthUser, UserRole } from "@/types";
@@ -16,27 +15,6 @@ import {
 
 const TOKEN_KEY = "renewflow_token";
 const USER_KEY = "renewflow_user";
-const LOCAL_ACCOUNTS_KEY = "renewflow_local_accounts";
-
-// ── Local auth fallback ──
-// When the gateway is unreachable, auth works locally so users can
-// sign up and log in without any backend dependency.
-
-interface LocalAccount { email: string; password: string; name: string; role: UserRole; orgId: string }
-
-function getLocalAccounts(): LocalAccount[] {
-  try { return JSON.parse(localStorage.getItem(LOCAL_ACCOUNTS_KEY) || "[]"); } catch { return []; }
-}
-
-function saveLocalAccount(account: LocalAccount) {
-  const accounts = getLocalAccounts().filter(a => a.email !== account.email);
-  accounts.push(account);
-  localStorage.setItem(LOCAL_ACCOUNTS_KEY, JSON.stringify(accounts));
-}
-
-function makeLocalToken(): string {
-  return `local_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-}
 
 type ResetState = "idle" | "sending" | "sent" | "resetting" | "success" | "error";
 
@@ -81,30 +59,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
       };
       localStorage.setItem(TOKEN_KEY, result.token);
       localStorage.setItem(USER_KEY, JSON.stringify(user));
-      // Also save locally so the user can log back in offline
-      saveLocalAccount({ email: params.email, password: params.password, name: params.name, role: user.role, orgId: user.orgId });
       set({ user, token: result.token, loading: false, error: null });
-    } catch {
-      // Gateway unreachable — create account locally
-      const existing = getLocalAccounts().find(a => a.email === params.email);
-      if (existing) {
-        set({ loading: false, error: "An account with this email already exists" });
-        return;
-      }
-      const orgId = `org_${Date.now().toString(36)}`;
-      const role: UserRole = params.role || "var";
-      const token = makeLocalToken();
-      const user: AuthUser = {
-        id: `usr_${Date.now().toString(36)}`,
-        email: params.email,
-        name: params.name,
-        orgId,
-        role,
-      };
-      saveLocalAccount({ email: params.email, password: params.password, name: params.name, role, orgId });
-      localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-      set({ user, token, loading: false, error: null });
+    } catch (err) {
+      const authErr = err as AuthError;
+      set({ loading: false, error: authErr.message || "Signup failed" });
     }
   },
 
@@ -122,24 +80,9 @@ export const useAuthStore = create<AuthStore>((set) => ({
       localStorage.setItem(TOKEN_KEY, result.token);
       localStorage.setItem(USER_KEY, JSON.stringify(user));
       set({ user, token: result.token, loading: false, error: null });
-    } catch {
-      // Gateway unreachable — check local accounts
-      const account = getLocalAccounts().find(a => a.email === params.email);
-      if (!account || account.password !== params.password) {
-        set({ loading: false, error: "Invalid email or password" });
-        return;
-      }
-      const token = makeLocalToken();
-      const user: AuthUser = {
-        id: `usr_${account.email.replace(/[^a-z0-9]/gi, "")}`,
-        email: account.email,
-        name: account.name,
-        orgId: account.orgId,
-        role: account.role,
-      };
-      localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-      set({ user, token, loading: false, error: null });
+    } catch (err) {
+      const authErr = err as AuthError;
+      set({ loading: false, error: authErr.message || "Invalid email or password" });
     }
   },
 

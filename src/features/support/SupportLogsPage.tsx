@@ -1,38 +1,45 @@
-import { useState, useEffect, type FC } from "react";
+import { useState, type FC } from "react";
 import { useTheme, FONT } from "@/theme";
 import { Icon } from "@/components/icons";
 import { Badge, Card, Pill, NewTicketModal, EmptyState } from "@/components/ui";
 import { useLocale } from "@/i18n";
-import { listTickets } from "@/services/api";
+import { useSupportStore } from "@/stores";
 import { SUPPORT_LOGS } from "@/data/seeds";
 import type { SupportTicket, TicketStatus, UserRole } from "@/types";
+import type { ApiTicket } from "@/services/gateway";
 
 interface SupportLogsPageProps {
   userRole?: UserRole;
+}
+
+/** Map API ticket to display format. Falls through to seed data if API not loaded. */
+function mapApiTicket(t: ApiTicket): SupportTicket {
+  return {
+    id: t.id.slice(0, 8),
+    client: "",
+    device: "",
+    issue: t.subject,
+    status: t.status as TicketStatus,
+    priority: t.priority as SupportTicket["priority"],
+    created: new Date(t.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    assignee: "",
+  };
 }
 
 export const SupportLogsPage: FC<SupportLogsPageProps> = ({ userRole = "var" }) => {
   const { colors } = useTheme();
   const { t } = useLocale();
   const [filter, setFilter] = useState<"all" | TicketStatus>("all");
-  const [tickets, setTickets] = useState<SupportTicket[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showNewTicket, setShowNewTicket] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    listTickets()
-      .then((data) => {
-        if (!cancelled) {
-          const apiTickets = (data.tickets || []) as SupportTicket[];
-          setTickets(apiTickets.length > 0 ? apiTickets : SUPPORT_LOGS);
-        }
-      })
-      .catch(() => { if (!cancelled) setTickets(SUPPORT_LOGS); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+  const apiTickets = useSupportStore((s) => s.tickets);
+  const loading = useSupportStore((s) => s.loading);
+  const loaded = useSupportStore((s) => s.loaded);
+
+  // Use API data if loaded, otherwise seed data
+  const tickets: SupportTicket[] = loaded && apiTickets.length > 0
+    ? apiTickets.map(mapApiTicket)
+    : SUPPORT_LOGS;
 
   const statusColor = (s: TicketStatus) =>
     ({ open: colors.warn, "in-progress": colors.blue, escalated: colors.danger, resolved: colors.accent }[s] ?? colors.textMid);
@@ -42,7 +49,7 @@ export const SupportLogsPage: FC<SupportLogsPageProps> = ({ userRole = "var" }) 
 
   const filtered = filter === "all" ? tickets : tickets.filter((tk) => tk.status === filter);
 
-  if (loading) {
+  if (loading && !loaded) {
     return (
       <div style={{ padding: 40, textAlign: "center", color: colors.textMid, fontSize: 14 }}>
         Loading support tickets...
@@ -116,9 +123,11 @@ export const SupportLogsPage: FC<SupportLogsPageProps> = ({ userRole = "var" }) 
                 <Badge color={statusColor(tk.status)}>{tk.status}</Badge>
               </div>
               <div style={{ fontSize: 13, color: colors.text }}>{tk.issue}</div>
-              <div style={{ fontSize: 12, color: colors.textMid, marginTop: 2 }}>
-                {tk.client} &middot; {tk.device} &middot; {tk.assignee}
-              </div>
+              {(tk.client || tk.device || tk.assignee) && (
+                <div style={{ fontSize: 12, color: colors.textMid, marginTop: 2 }}>
+                  {[tk.client, tk.device, tk.assignee].filter(Boolean).join(" \u00b7 ")}
+                </div>
+              )}
             </div>
             <span style={{ fontSize: 12, color: colors.textMid }}>{tk.created}</span>
           </Card>

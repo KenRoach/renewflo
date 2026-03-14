@@ -1,12 +1,12 @@
-import { useState, useEffect, type FC } from "react";
+import { useState, type FC } from "react";
 import { useTheme, MONO, FONT } from "@/theme";
 import { Icon } from "@/components/icons";
 import { Badge, Card, Pill, SectionHeader, NewPOModal, EmptyState } from "@/components/ui";
-import { listOrders } from "@/services/api";
 import { PURCHASE_ORDERS } from "@/data/seeds";
 import { useLocale } from "@/i18n";
 import type { PurchaseOrder, POStatus, UserRole } from "@/types";
-import { useRewardsStore } from "@/stores";
+import { useRewardsStore, useOrdersStore } from "@/stores";
+import type { ApiOrder } from "@/services/gateway";
 
 interface OrdersPageProps {
   userRole?: UserRole;
@@ -16,25 +16,26 @@ export const OrdersPage: FC<OrdersPageProps> = ({ userRole = "var" }) => {
   const { colors } = useTheme();
   const { t } = useLocale();
   const [filter, setFilter] = useState<"all" | POStatus>("all");
-  const [orders, setOrders] = useState<PurchaseOrder[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showNewPO, setShowNewPO] = useState(false);
   const addPoints = useRewardsStore((s) => s.addPoints);
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    listOrders()
-      .then((data) => {
-        if (!cancelled) {
-          const apiOrders = (data.orders || []) as PurchaseOrder[];
-          setOrders(apiOrders.length > 0 ? apiOrders : PURCHASE_ORDERS);
-        }
-      })
-      .catch(() => { if (!cancelled) setOrders(PURCHASE_ORDERS); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
-  }, []);
+  const apiOrders = useOrdersStore((s) => s.orders);
+  const loading = useOrdersStore((s) => s.loading);
+  const loaded = useOrdersStore((s) => s.loaded);
+
+  // Map API orders to frontend PurchaseOrder, or use seed data
+  const orders: PurchaseOrder[] = loaded && apiOrders.length > 0
+    ? apiOrders.map((o: ApiOrder) => ({
+        id: o.id.slice(0, 8),
+        client: "",
+        quoteRef: o.quote_id?.slice(0, 8) || "",
+        items: [],
+        status: o.status as POStatus,
+        total: o.total_amount,
+        created: new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        updated: new Date(o.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      }))
+    : PURCHASE_ORDERS;
 
   const statusColor = (s: POStatus) =>
     ({
@@ -58,7 +59,7 @@ export const OrdersPage: FC<OrdersPageProps> = ({ userRole = "var" }) => {
       cancelled: "Cancelled",
     })[s] ?? s;
 
-  if (loading) {
+  if (loading && !loaded) {
     return (
       <div style={{ padding: 40, textAlign: "center", color: colors.textMid, fontSize: 14 }}>
         {t.loadingPOs}

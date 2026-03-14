@@ -5,8 +5,9 @@ import { Icon } from "@/components/icons";
 import { Badge, Card, DownloadTemplateModal } from "@/components/ui";
 import { IMPORT_FIELD_DEFINITIONS, SAMPLE_TEMPLATE_ROWS } from "@/data/seeds";
 import type { Asset, ImportStep, ColumnMapping, AssetTier, AssetStatus } from "@/types";
-import { useRewardsStore } from "@/stores";
+import { useRewardsStore, useAssetStore } from "@/stores";
 import { useLocale } from "@/i18n";
+import { assets as assetsApi } from "@/services/gateway";
 
 interface ImportModuleProps {
   onImport: (assets: Asset[] | null) => void;
@@ -26,10 +27,15 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
   const [fileName, setFileName] = useState("");
   const [error, setError] = useState("");
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<{ imported: number; total: number } | null>(null);
+  const [originalFile, setOriginalFile] = useState<File | null>(null);
+  const loadFromApi = useAssetStore((s) => s.loadFromApi);
 
   const parseFile = useCallback((file: File) => {
     setError("");
     setFileName(file.name);
+    setOriginalFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
@@ -399,7 +405,24 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
               {t.back}
             </button>
             <button
-              onClick={() => { onImport(parsedAssets); setStep("done"); addPoints(`Imported ${parsedAssets.length} assets`, 10); }}
+              disabled={importing}
+              onClick={async () => {
+                setImporting(true);
+                try {
+                  if (originalFile) {
+                    const result = await assetsApi.importFile(originalFile);
+                    setImportResult(result);
+                    // Refresh assets from API after import
+                    loadFromApi();
+                  }
+                } catch {
+                  // API import failed — fall back to client-side import
+                  onImport(parsedAssets);
+                }
+                setImporting(false);
+                setStep("done");
+                addPoints(`Imported ${parsedAssets.length} assets`, 10);
+              }}
               style={{
                 background: colors.accent,
                 color: colors.onAccent,
@@ -416,7 +439,7 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
                 boxShadow: `0 2px 8px ${colors.accent}40`,
               }}
             >
-              <Icon name="check" size={14} color={colors.onAccent} /> Import {parsedAssets.length} Assets
+              <Icon name="check" size={14} color={colors.onAccent} /> {importing ? "Importing..." : `Import ${parsedAssets.length} Assets`}
             </button>
           </div>
         </div>
@@ -463,7 +486,7 @@ export const ImportModule: FC<ImportModuleProps> = ({ onImport }) => {
         <Icon name="check" size={32} color={colors.accent} />
       </div>
       <h2 style={{ fontSize: 20, fontWeight: 700, color: colors.text, margin: "0 0 8px" }}>
-        {parsedAssets.length} {t.assetsImported}
+        {importResult ? importResult.imported : parsedAssets.length} {t.assetsImported}
       </h2>
       <p style={{ fontSize: 14, color: colors.textMid, marginBottom: 24 }}>
         {t.trackingMessage}

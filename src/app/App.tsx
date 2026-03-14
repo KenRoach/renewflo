@@ -17,7 +17,14 @@ import { ChatPanel } from "@/features/chat";
 import { LoginPage } from "@/features/auth";
 import { ErrorBoundary, PageTransition } from "@/components/ui";
 import type { Asset, PageId, UserRole } from "@/types";
-import { useAssetStore, useAuthStore } from "@/stores";
+import {
+  useAssetStore,
+  useAuthStore,
+  useOrdersStore,
+  useSupportStore,
+  useNotificationsStore,
+  useQuotesStore,
+} from "@/stores";
 import { PURCHASE_ORDERS } from "@/data/seeds";
 
 const LOCALE_STORAGE_KEY = "renewflow_locale";
@@ -53,6 +60,16 @@ export default function App() {
   const hydrate = useAuthStore((s) => s.hydrate);
   const logout = useAuthStore((s) => s.logout);
 
+  const loadOrders = useOrdersStore((s) => s.load);
+  const ordersLoaded = useOrdersStore((s) => s.loaded);
+  const loadSupport = useSupportStore((s) => s.load);
+  const supportLoaded = useSupportStore((s) => s.loaded);
+  const loadNotifications = useNotificationsStore((s) => s.load);
+  const notificationsLoaded = useNotificationsStore((s) => s.loaded);
+  const loadQuotes = useQuotesStore((s) => s.load);
+  const quotesLoaded = useQuotesStore((s) => s.loaded);
+  const unreadCount = useNotificationsStore((s) => s.unreadCount);
+
   const userRole: UserRole = user?.role || "var";
   const t = translations[locale];
 
@@ -68,12 +85,23 @@ export default function App() {
     return () => window.removeEventListener("renewflow:auth-expired", handleExpired);
   }, [logout]);
 
-  // Load assets from API when authenticated
+  // Load all data from API when authenticated
   useEffect(() => {
-    if (user && token && !assetsLoaded) {
-      loadFromApi();
+    if (user && token) {
+      if (!assetsLoaded) loadFromApi();
+      if (!ordersLoaded) loadOrders();
+      if (!supportLoaded) loadSupport();
+      if (!notificationsLoaded) loadNotifications();
+      if (!quotesLoaded) loadQuotes();
     }
-  }, [user, token, assetsLoaded, loadFromApi]);
+  }, [user, token, assetsLoaded, ordersLoaded, supportLoaded, notificationsLoaded, quotesLoaded, loadFromApi, loadOrders, loadSupport, loadNotifications, loadQuotes]);
+
+  // Poll notifications every 60s
+  useEffect(() => {
+    if (!user || !token) return;
+    const interval = setInterval(() => loadNotifications(), 60_000);
+    return () => clearInterval(interval);
+  }, [user, token, loadNotifications]);
 
   // Guard: redirect to dashboard if current page isn't accessible to role
   useEffect(() => {
@@ -172,6 +200,7 @@ export default function App() {
             userName={user.name}
             userRole={userRole}
             onLogout={logout}
+            unreadNotifications={unreadCount}
           />
 
           <ChatPanel

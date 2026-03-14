@@ -14,6 +14,7 @@ interface SidebarProps {
   userName?: string;
   userRole: UserRole;
   onLogout?: () => void;
+  unreadNotifications?: number;
 }
 
 interface NavBtnProps {
@@ -22,9 +23,10 @@ interface NavBtnProps {
   label: string;
   active: boolean;
   onClick: () => void;
+  badge?: number;
 }
 
-const NavBtn: FC<NavBtnProps> = ({ icon, label, active, onClick }) => {
+const NavBtn: FC<NavBtnProps> = ({ icon, label, active, onClick, badge }) => {
   const { colors } = useTheme();
 
   return (
@@ -49,6 +51,22 @@ const NavBtn: FC<NavBtnProps> = ({ icon, label, active, onClick }) => {
     >
       <Icon name={icon} size={16} color={active ? colors.accent : colors.textMid} />
       <span style={{ flex: 1 }}>{label}</span>
+      {badge != null && badge > 0 && (
+        <span
+          style={{
+            background: colors.accent,
+            color: "#fff",
+            fontSize: 9,
+            fontWeight: 700,
+            borderRadius: 8,
+            padding: "1px 5px",
+            minWidth: 14,
+            textAlign: "center",
+          }}
+        >
+          {badge > 99 ? "99+" : badge}
+        </span>
+      )}
     </button>
   );
 };
@@ -95,6 +113,7 @@ export const Sidebar: FC<SidebarProps> = ({
   userName,
   userRole,
   onLogout,
+  unreadNotifications,
 }) => {
   const { colors, isDark } = useTheme();
   const { t } = useLocale();
@@ -169,7 +188,7 @@ export const Sidebar: FC<SidebarProps> = ({
             <NavSection label={t.general}>
               <NavBtn id="dashboard" icon="dashboard" label={t.dashboard} active={activePage === "dashboard"} onClick={() => onNavigate("dashboard")} />
               <NavBtn id="inbox" icon="inbox" label={t.inbox} active={activePage === "inbox"} onClick={() => onNavigate("inbox")} />
-              <NavBtn id="notifications" icon="bell" label={t.alerts} active={activePage === "notifications"} onClick={() => onNavigate("notifications")} />
+              <NavBtn id="notifications" icon="bell" label={t.alerts} active={activePage === "notifications"} onClick={() => onNavigate("notifications")} badge={unreadNotifications} />
             </NavSection>
             <NavSection label={t.sales}>
               <NavBtn id="quoter" icon="quote" label={t.quoter} active={activePage === "quoter"} onClick={() => onNavigate("quoter")} />
@@ -189,7 +208,7 @@ export const Sidebar: FC<SidebarProps> = ({
           <>
             <NavSection label={t.overview}>
               <NavBtn id="dashboard" icon="dashboard" label={t.opsDashboard} active={activePage === "dashboard"} onClick={() => onNavigate("dashboard")} />
-              <NavBtn id="notifications" icon="bell" label={t.alerts} active={activePage === "notifications"} onClick={() => onNavigate("notifications")} />
+              <NavBtn id="notifications" icon="bell" label={t.alerts} active={activePage === "notifications"} onClick={() => onNavigate("notifications")} badge={unreadNotifications} />
             </NavSection>
             <NavSection label={t.operations}>
               <NavBtn id="support" icon="support" label={t.supportTickets} active={activePage === "support"} onClick={() => onNavigate("support")} />
@@ -209,7 +228,7 @@ export const Sidebar: FC<SidebarProps> = ({
           <>
             <NavSection label={t.overview}>
               <NavBtn id="dashboard" icon="dashboard" label={t.myDashboard} active={activePage === "dashboard"} onClick={() => onNavigate("dashboard")} />
-              <NavBtn id="notifications" icon="bell" label={t.alerts} active={activePage === "notifications"} onClick={() => onNavigate("notifications")} />
+              <NavBtn id="notifications" icon="bell" label={t.alerts} active={activePage === "notifications"} onClick={() => onNavigate("notifications")} badge={unreadNotifications} />
             </NavSection>
             <NavSection label={t.fulfillment}>
               <NavBtn id="orders" icon="order" label={t.assignedPOs} active={activePage === "orders"} onClick={() => onNavigate("orders")} />

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { Asset } from "@/types";
-import { listAssets } from "@/services/api";
+import { assets as assetsApi, type ApiAsset } from "@/services/gateway";
 import { INITIAL_ASSETS } from "@/data/seeds";
 
 const ASSETS_STORAGE_KEY = "renewflow_assets";
@@ -18,10 +18,30 @@ function loadPersistedAssets(): Asset[] | null {
   } catch { return null; }
 }
 
+/** Map API snake_case asset to frontend Asset type */
+function mapApiAsset(a: ApiAsset): Asset {
+  return {
+    id: a.id,
+    brand: a.brand,
+    model: a.model,
+    serial: a.serial,
+    client: "", // API doesn't have client field on asset_item — populated from org context
+    tier: a.tier as Asset["tier"],
+    daysLeft: a.daysLeft,
+    oem: null, // pricing comes from quotes/price-lists
+    tpm: 0,
+    status: a.status as Asset["status"],
+    warrantyEnd: a.warranty_end,
+    deviceType: a.device_type ?? undefined,
+    purchaseDate: a.purchase_date ?? undefined,
+  };
+}
+
 interface AssetStore {
   assets: Asset[];
   loading: boolean;
   loaded: boolean;
+  error: string | null;
   addAssets: (newAssets: Asset[]) => void;
   updateAsset: (id: string, patch: Partial<Asset>) => void;
   removeAsset: (id: string) => void;
@@ -32,19 +52,20 @@ export const useAssetStore = create<AssetStore>((set, get) => ({
   assets: [],
   loading: false,
   loaded: false,
+  error: null,
 
   loadFromApi: async () => {
     if (get().loading) return;
-    set({ loading: true });
+    set({ loading: true, error: null });
     try {
-      const data = await listAssets();
-      const apiAssets = (data.assets || []) as Asset[];
+      const result = await assetsApi.list({ limit: 100 });
+      const apiAssets = result.data.map(mapApiAsset);
       if (apiAssets.length > 0) {
         persistAssets(apiAssets);
         set({ assets: apiAssets, loaded: true, loading: false });
         return;
       }
-    } catch { /* gateway unavailable */ }
+    } catch { /* API unavailable — fall back */ }
 
     // Fallback: localStorage > seed data
     const cached = loadPersistedAssets();

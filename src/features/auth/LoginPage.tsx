@@ -8,7 +8,6 @@ type AuthMode = "login" | "signup" | "forgot" | "reset" | "reset-success";
 
 const ROLE_OPTIONS: { value: UserRole; label: string; desc: string }[] = [
   { value: "var", label: "VAR Partner", desc: "Manage assets, quotes & renewals" },
-  { value: "support", label: "Support Team", desc: "RenewFlow operations & triage" },
   { value: "delivery-partner", label: "Delivery Partner", desc: "Fulfill warranty & service POs" },
 ];
 
@@ -20,6 +19,7 @@ export const LoginPage: FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState<UserRole>("var");
+  const [orgName, setOrgName] = useState("");
   const [resetToken, setResetToken] = useState("");
   const [maskedEmail, setMaskedEmail] = useState("");
   const [tokenValid, setTokenValid] = useState<boolean | null>(null);
@@ -70,7 +70,7 @@ export const LoginPage: FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (mode === "signup") {
-      await signup({ email, password, name, role });
+      await signup({ email, password, name, role, orgName: orgName || `${name}'s Organization` });
     } else if (mode === "login") {
       await login({ email, password });
     } else if (mode === "forgot") {
@@ -288,6 +288,31 @@ export const LoginPage: FC = () => {
                         required
                         minLength={2}
                         maxLength={100}
+                        style={inputStyle}
+                      />
+                    </div>
+
+                    {/* Organization Name */}
+                    <div>
+                      <label
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                          color: colors.textMid,
+                          display: "block",
+                          marginBottom: 6,
+                        }}
+                      >
+                        Organization Name
+                      </label>
+                      <input
+                        type="text"
+                        value={orgName}
+                        onChange={(e) => setOrgName(e.target.value)}
+                        placeholder="Your Company"
+                        required
+                        minLength={1}
+                        maxLength={200}
                         style={inputStyle}
                       />
                     </div>
