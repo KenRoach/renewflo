@@ -19,11 +19,15 @@ interface QuoteEmailData {
   senderName: string;
 }
 
+function esc(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function buildHtml(data: QuoteEmailData): string {
   const rows = data.lineItems.map((li) =>
     `<tr>
-      <td style="padding:8px 12px;border-bottom:1px solid #E2E8F0">${li.brand} ${li.model}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #E2E8F0">${li.coverage_type.toUpperCase()}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #E2E8F0">${esc(li.brand)} ${esc(li.model)}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #E2E8F0">${esc(li.coverage_type.toUpperCase())}</td>
       <td style="padding:8px 12px;border-bottom:1px solid #E2E8F0;text-align:center">${li.quantity}</td>
       <td style="padding:8px 12px;border-bottom:1px solid #E2E8F0;text-align:right">${li.unit_price != null ? `$${li.unit_price.toLocaleString()}` : 'TBD'}</td>
     </tr>`
@@ -42,11 +46,11 @@ function buildHtml(data: QuoteEmailData): string {
     </div>
     <div style="background:#fff;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 12px 12px;padding:24px 32px">
       <p style="color:#334155;font-size:14px;line-height:1.6;margin:0 0 16px">
-        ${data.senderName} has shared a warranty renewal quote with you.
+        ${esc(data.senderName)} has shared a warranty renewal quote with you.
       </p>
       <div style="background:#F1F5F9;border-radius:8px;padding:12px 16px;margin-bottom:20px">
         <span style="font-size:12px;color:#64748B">Quote ID</span>
-        <div style="font-size:16px;font-weight:700;color:#1E293B">${data.quoteId.slice(0, 8)}</div>
+        <div style="font-size:16px;font-weight:700;color:#1E293B">${esc(data.quoteId.slice(0, 8))}</div>
       </div>
       <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px">
         <thead>

@@ -62,6 +62,7 @@ export const alertsService = {
           .insert({
             org_id: asset.org_id,
             type: threshold.type,
+            priority: threshold.priority,
             title,
             body,
             asset_id: asset.id,

@@ -209,21 +209,23 @@ export const QuoterPage: FC<QuoterPageProps> = ({ assets }) => {
     if (selected.length === 0) return;
     setGenerating(true);
     setError(null);
+    let apiQuoteId: string | null = null;
     try {
       // Try creating a real quote via the API
-      await createQuote({
+      const apiQuote = await createQuote({
         lineItems: selected.map((assetId) => ({
           assetId,
           coverageType: coverage,
           durationMonths: 12,
         })),
       });
+      apiQuoteId = apiQuote?.id ?? null;
     } catch {
       // API quote creation failed — continue with client-side generation
     }
 
     // Always generate the client-side QuoteResult for display + PDF
-    const quoteId = `Q-${4000 + Math.floor(Math.random() * 1000)}`;
+    const quoteId = apiQuoteId || `Q-${4000 + Math.floor(Math.random() * 1000)}`;
     const clients = [...new Set(picked.map((a) => a.client))];
     const quoteItems = picked.map((a) => ({
       assetId: a.id,

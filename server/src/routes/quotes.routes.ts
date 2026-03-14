@@ -1,4 +1,5 @@
 import { FastifyInstance } from 'fastify';
+import { z } from 'zod';
 import { createUserClient } from '../supabase.js';
 import { requireOrgType } from '../lib/role-guard.js';
 import { quotesService } from '../services/quotes.service.js';
@@ -53,16 +54,9 @@ export async function quoteRoutes(app: FastifyInstance) {
     const body = rfqRespondSchema.parse(request.body);
     return reply.send(await quotesService.respondRfq(createUserClient(request.user.accessToken), id, request.user.orgId, body));
   });
-  app.post('/:id/email', async (request, reply) => {
+  app.post('/:id/email', { config: { rateLimit: { max: 5, timeWindow: '1 minute' } } }, async (request, reply) => {
     const { id } = uuidParam.parse(request.params);
-    const { recipients } = request.body as { recipients: string[] };
-
-    if (!Array.isArray(recipients) || recipients.length === 0) {
-      return reply.status(400).send({ code: 'VALIDATION', message: 'recipients array required' });
-    }
-    if (recipients.length > 10) {
-      return reply.status(400).send({ code: 'VALIDATION', message: 'Maximum 10 recipients per request' });
-    }
+    const { recipients } = z.object({ recipients: z.array(z.string().email()).min(1).max(10) }).parse(request.body);
 
     const quote = await quotesService.getById(createUserClient(request.user.accessToken), id);
 
