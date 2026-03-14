@@ -16,6 +16,8 @@ import { HowItWorksPage } from "@/features/how-it-works";
 import { ChatPanel } from "@/features/chat";
 import { LoginPage } from "@/features/auth";
 import { ErrorBoundary, PageTransition } from "@/components/ui";
+import { BrowserRouter } from "react-router-dom";
+import { PartnerRouter } from "@/features/partner-portal";
 import type { Asset, PageId, UserRole } from "@/types";
 import type { ApiOrder } from "@/services/gateway";
 import {
@@ -211,6 +213,22 @@ export default function App() {
         return <DashboardPage setPage={handleNavigate} assets={assets} userRole={userRole} />;
     }
   };
+
+  if (userRole === "delivery-partner") {
+    return (
+      <ThemeContext.Provider value={{ colors, isDark, toggle: () => setIsDark((d) => !d) }}>
+        <LocaleContext.Provider value={{ locale, setLocale, t }}>
+          <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+          />
+          <BrowserRouter>
+            <PartnerRouter orgType="delivery_partner" />
+          </BrowserRouter>
+        </LocaleContext.Provider>
+      </ThemeContext.Provider>
+    );
+  }
 
   return (
     <ThemeContext.Provider value={{ colors, isDark, toggle: () => setIsDark((d) => !d) }}>
