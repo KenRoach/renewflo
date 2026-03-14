@@ -354,6 +354,13 @@ export const quotes = {
   async reject(id: string): Promise<ApiQuote> {
     return request<ApiQuote>(`/quotes/${id}/reject`, { method: "POST" });
   },
+
+  async sendEmail(id: string, recipients: string[]): Promise<{ sent: string[]; failed: string[] }> {
+    return request<{ sent: string[]; failed: string[] }>(`/quotes/${id}/email`, {
+      method: "POST",
+      body: JSON.stringify({ recipients }),
+    });
+  },
 };
 
 // ─── Users ───

@@ -4,6 +4,7 @@ import { Icon } from "@/components/icons";
 import { Badge, Card, SectionHeader } from "@/components/ui";
 import { tierColor, urgencyColor, generateQuotePdf } from "@/utils";
 import type { QuoteResult } from "@/services/gateway";
+import { quotes as quotesApi } from "@/services/gateway";
 import { useRewardsStore, useQuotesStore } from "@/stores";
 import type { Asset } from "@/types";
 
@@ -337,11 +338,14 @@ export const QuoterPage: FC<QuoterPageProps> = ({ assets }) => {
     setSending(true);
     setSendResult(null);
     try {
-      // For now, generate PDF and mark as "sent" — email delivery will be wired to backend email service
-      generateQuotePdf(quote);
-      setSendResult({ sent: emailList, failed: [] });
-      addPoints(`Quote emailed to ${emailList.length} recipient(s)`, 15);
+      const result = await quotesApi.sendEmail(quote.quoteId, emailList);
+      setSendResult({ sent: result.sent, failed: result.failed });
+      if (result.sent.length > 0) {
+        addPoints(`Quote emailed to ${result.sent.length} recipient(s)`, 15);
+      }
     } catch {
+      // API unavailable — fall back to PDF generation
+      generateQuotePdf(quote);
       setSendResult({ sent: [], failed: emailList });
     } finally {
       setSending(false);
