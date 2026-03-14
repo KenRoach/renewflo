@@ -438,4 +438,11 @@ export const auth = {
       body: JSON.stringify({ email }),
     });
   },
+
+  async resetPassword(password: string): Promise<{ message: string }> {
+    return request<{ message: string }>(`/auth/reset-password`, {
+      method: "PATCH",
+      body: JSON.stringify({ password }),
+    });
+  },
 };

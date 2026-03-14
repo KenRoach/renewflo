@@ -22,7 +22,7 @@ async function authPlugin(app: FastifyInstance) {
   app.decorateRequest('user', null as unknown as AuthUser);
 
   app.addHook('onRequest', async (request: FastifyRequest, _reply: FastifyReply) => {
-    const publicPaths = ['/api/v1/auth/signup', '/api/v1/auth/login', '/api/v1/auth/forgot-password', '/health'];
+    const publicPaths = ['/api/v1/auth/signup', '/api/v1/auth/login', '/api/v1/auth/forgot-password', '/api/v1/auth/reset-password', '/health'];
     if (publicPaths.some((p) => request.url.startsWith(p))) return;
 
     const authHeader = request.headers.authorization;

@@ -126,10 +126,14 @@ export async function validateResetToken(
 
 export async function resetPassword(
   _token: string,
-  _password: string,
+  password: string,
 ): Promise<{ success: boolean; message: string }> {
-  // Supabase password reset works via the confirmation link flow
-  // The token in URL is a Supabase magic link token, not a custom token
-  // This will be handled by the Supabase auth callback
-  return { success: true, message: "Password reset successful" };
+  try {
+    // The recovery token is already stored as the Bearer token in localStorage
+    // by handleAuthCallback in App.tsx — the gateway request() will include it
+    const res = await gatewayAuth.resetPassword(password);
+    return { success: true, message: res.message };
+  } catch (err) {
+    return toAuthError(err);
+  }
 }

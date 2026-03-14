@@ -31,16 +31,18 @@ const LOCALE_STORAGE_KEY = "renewflow_locale";
 
 // Handle Supabase email verification callback
 // Supabase redirects with hash params: #access_token=...&refresh_token=...&type=signup
-function handleAuthCallback(): boolean {
+function handleAuthCallback(): "recovery" | "signup" | "magiclink" | null {
   const hash = window.location.hash;
-  if (!hash || !hash.includes("access_token")) return false;
+  if (!hash || !hash.includes("access_token")) return null;
 
   const params = new URLSearchParams(hash.replace("#", "?"));
   const accessToken = params.get("access_token");
   const refreshToken = params.get("refresh_token");
-  const type = params.get("type");
+  const type = params.get("type") as "signup" | "recovery" | "magiclink" | null;
 
   if (accessToken && (type === "signup" || type === "recovery" || type === "magiclink")) {
+    // Clear stale user data to prevent identity mismatch
+    localStorage.removeItem("renewflow_user");
     // Store the token so the auth store can hydrate
     localStorage.setItem("renewflow_token", accessToken);
     if (refreshToken) {
@@ -48,9 +50,9 @@ function handleAuthCallback(): boolean {
     }
     // Clean the URL hash
     window.history.replaceState(null, "", window.location.pathname + window.location.search);
-    return true;
+    return type;
   }
-  return false;
+  return null;
 }
 
 // ─── Role-based page access ───
@@ -64,6 +66,7 @@ export default function App() {
   const [isDark, setIsDark] = useState(false);
   const [page, setPage] = useState<PageId>("dashboard");
   const [chatOpen, setChatOpen] = useState(false);
+  const [isRecovery, setIsRecovery] = useState(false);
   const [locale, setLocaleState] = useState<Locale>(() => {
     const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
     return (stored === "es" || stored === "pt") ? stored : "en";
@@ -99,7 +102,10 @@ export default function App() {
 
   // Handle Supabase email verification / password recovery callbacks
   useEffect(() => {
-    handleAuthCallback();
+    const callbackType = handleAuthCallback();
+    if (callbackType === "recovery") {
+      setIsRecovery(true);
+    }
     hydrate();
   }, [hydrate]);
 
@@ -154,8 +160,8 @@ export default function App() {
     }
   };
 
-  // Auth gate: show login if not authenticated
-  if (!user || !token) {
+  // Auth gate: show login if not authenticated, or recovery reset form
+  if (!user || !token || isRecovery) {
     return (
       <ThemeContext.Provider value={{ colors, isDark, toggle: () => setIsDark((d) => !d) }}>
         <LocaleContext.Provider value={{ locale, setLocale, t }}>
@@ -163,7 +169,14 @@ export default function App() {
             href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
             rel="stylesheet"
           />
-          <LoginPage />
+          <LoginPage
+            initialMode={isRecovery ? "reset" : undefined}
+            onResetComplete={() => {
+              setIsRecovery(false);
+              // Clear recovery token — user must log in fresh with new password
+              logout();
+            }}
+          />
         </LocaleContext.Provider>
       </ThemeContext.Provider>
     );

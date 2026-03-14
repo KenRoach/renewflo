@@ -62,6 +62,18 @@ export const authService = {
     };
   },
 
+  async resetPassword(accessToken: string, newPassword: string) {
+    // Use the recovery token (passed as Bearer token) to update the user's password
+    const { data: { user }, error: getUserError } = await adminClient.auth.getUser(accessToken);
+    if (getUserError || !user) throw new BadRequestError('Invalid or expired recovery token');
+
+    const { error } = await adminClient.auth.admin.updateUserById(user.id, {
+      password: newPassword,
+    });
+    if (error) throw new BadRequestError(`Failed to reset password: ${error.message}`);
+    return { message: 'Password updated successfully' };
+  },
+
   async forgotPassword(email: string) {
     const redirectTo = process.env.FRONTEND_URL || 'https://renewflow.io';
     const { error } = await adminClient.auth.resetPasswordForEmail(email, {

@@ -11,9 +11,14 @@ const ROLE_OPTIONS: { value: UserRole; label: string; desc: string }[] = [
   { value: "delivery-partner", label: "Delivery Partner", desc: "Fulfill warranty & service POs" },
 ];
 
-export const LoginPage: FC = () => {
+interface LoginPageProps {
+  initialMode?: AuthMode;
+  onResetComplete?: () => void;
+}
+
+export const LoginPage: FC<LoginPageProps> = ({ initialMode, onResetComplete }) => {
   const { colors } = useTheme();
-  const [mode, setMode] = useState<AuthMode>("login");
+  const [mode, setMode] = useState<AuthMode>(initialMode || "login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -37,14 +42,19 @@ export const LoginPage: FC = () => {
     clearResetState,
   } = useAuthStore();
 
-  // Check URL for reset token on mount
+  // Check URL for reset token on mount, or use initialMode from recovery callback
   useEffect(() => {
+    if (initialMode === "reset") {
+      // Recovery callback from Supabase — token is already stored in localStorage
+      setTokenValid(true);
+      setResetToken("recovery");
+      return;
+    }
     const params = new URLSearchParams(window.location.search);
     const token = params.get("reset-token");
     if (token) {
       setResetToken(token);
       setMode("reset");
-      // Validate token
       validateResetToken(token).then((result) => {
         setTokenValid(result.valid);
         if (result.email) setMaskedEmail(result.email);
@@ -55,17 +65,17 @@ export const LoginPage: FC = () => {
         setTokenValid(false);
         setMode("forgot");
       });
-      // Clean URL
       window.history.replaceState({}, "", window.location.pathname);
     }
-  }, []);
+  }, [initialMode]);
 
   // Transition to success mode when reset completes
   useEffect(() => {
     if (resetState === "success" && mode === "reset") {
       setMode("reset-success");
+      onResetComplete?.();
     }
-  }, [resetState, mode]);
+  }, [resetState, mode, onResetComplete]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
