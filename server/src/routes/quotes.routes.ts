@@ -53,4 +53,29 @@ export async function quoteRoutes(app: FastifyInstance) {
     const body = rfqRespondSchema.parse(request.body);
     return reply.send(await quotesService.respondRfq(createUserClient(request.user.accessToken), id, request.user.orgId, body));
   });
+  app.post('/:id/email', async (request, reply) => {
+    const { id } = uuidParam.parse(request.params);
+    const { recipients } = request.body as { recipients: string[] };
+
+    if (!Array.isArray(recipients) || recipients.length === 0) {
+      return reply.status(400).send({ code: 'VALIDATION', message: 'recipients array required' });
+    }
+    if (recipients.length > 10) {
+      return reply.status(400).send({ code: 'VALIDATION', message: 'Maximum 10 recipients per request' });
+    }
+
+    const quote = await quotesService.getById(createUserClient(request.user.accessToken), id);
+
+    const { emailService } = await import('../services/email.service.js');
+    const result = await emailService.sendQuoteEmail(recipients, {
+      quoteId: quote.id,
+      status: quote.status,
+      totalAmount: quote.total_amount,
+      currency: quote.currency,
+      lineItems: quote.line_items ?? [],
+      senderName: request.user.email,
+    });
+
+    return reply.send(result);
+  });
 }
