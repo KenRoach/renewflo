@@ -46,10 +46,13 @@ Four phased sub-projects to complete RenewFlow's core platform capabilities. Eac
   - Inline HTML email template: branded header, quote summary, line items table, total, "View in RenewFlow" CTA button linking to `https://renewflow.io` (no deep link — users log in and navigate)
   - Send from `quotes@renewflow.io` (fallback `onboarding@resend.dev` if domain not yet verified)
 - **New route:** `POST /:id/email` in `quotes.routes.ts` (full path: `/api/v1/quotes/:id/email`)
-  - Body: `{ recipients: string[] }` — max 10 recipients per request
+  - Body: `{ recipients: string[] }` — max 10 recipients per request, reject with 400 if more
   - Requires authenticated session (not a public path)
+  - Rate limiting: reuse existing Fastify rate-limit plugin (`authRateLimit` pattern — 5 req/min per user) to prevent Resend quota exhaustion
   - Fetches quote with line items, calls email service
   - Returns `{ sent: string[], failed: string[] }`
+
+**Risk:** Low. Rollback: `git revert`, remove `resend` dep.
 
 ### Frontend Side
 
@@ -91,6 +94,8 @@ Four phased sub-projects to complete RenewFlow's core platform capabilities. Eac
 
 No changes needed. Existing `useNotificationsStore` + `NotificationsPage` already display `notif_alert` records.
 
+**Risk:** Low. Rollback: `git revert`, remove `node-cron` dep, remove job import from `index.ts`.
+
 ## Phase 4: Partner Portal Data Wiring
 
 **Goal:** Verify and fix the delivery-partner experience so all portal pages work with real API data.
@@ -121,6 +126,8 @@ The partner portal has complete UI:
 - For any missing server-side methods: implement minimal versions
 - For response shape mismatches: fix the mapping in `partner.api.ts`
 - For missing backend tables (entitlements): create stub endpoints that return empty data with appropriate structure
+
+**Risk:** Medium — scope depends on gap count. Rollback: `git revert` per-commit (each endpoint fix is a separate commit).
 
 ## Dependencies
 
