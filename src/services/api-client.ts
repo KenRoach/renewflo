@@ -1,10 +1,10 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api/v1";
+const API_BASE = import.meta.env.VITE_API_URL || "https://api-production-dcc6.up.railway.app/api/v1";
 
 export async function apiFetch<T>(
   path: string,
   options?: RequestInit
 ): Promise<T> {
-  const token = localStorage.getItem("access_token");
+  const token = localStorage.getItem("renewflow_token");
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
