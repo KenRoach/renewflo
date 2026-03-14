@@ -12,6 +12,7 @@ import {
   type LoginParams,
   type AuthError,
 } from "@/services/auth";
+import { users as usersApi } from "@/services/gateway";
 
 const TOKEN_KEY = "renewflow_token";
 const USER_KEY = "renewflow_user";
@@ -31,7 +32,7 @@ interface AuthStore {
   signup: (params: SignupParams) => Promise<void>;
   login: (params: LoginParams) => Promise<void>;
   logout: () => void;
-  hydrate: () => void;
+  hydrate: () => Promise<void>;
   clearError: () => void;
   requestPasswordReset: (email: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
@@ -92,21 +93,44 @@ export const useAuthStore = create<AuthStore>((set) => ({
     set({ user: null, token: null, error: null });
   },
 
-  hydrate: () => {
+  hydrate: async () => {
     const token = localStorage.getItem(TOKEN_KEY);
     const userJson = localStorage.getItem(USER_KEY);
+
     if (token && userJson) {
       try {
         const parsed = JSON.parse(userJson) as AuthUser;
-        // Ensure role is set (backward compat for existing sessions)
         const user: AuthUser = {
           ...parsed,
           role: parsed.role || ("var" as UserRole),
         };
         set({ user, token });
+        return;
+      } catch {
+        // Corrupted user data — fall through to /me fetch
+      }
+    }
+
+    // Token exists but no user data (e.g., email verification callback)
+    if (token && !userJson) {
+      try {
+        const me = await usersApi.me();
+        const roleMap: Record<string, UserRole> = {
+          var: "var",
+          delivery_partner: "delivery-partner",
+          operator: "support",
+        };
+        const user: AuthUser = {
+          id: me.id,
+          email: me.email,
+          name: me.full_name,
+          orgId: me.org_id,
+          role: roleMap[me.role] || "var",
+        };
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
+        set({ user, token });
       } catch {
         localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
       }
     }
   },

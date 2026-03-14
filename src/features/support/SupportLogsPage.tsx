@@ -137,7 +137,18 @@ export const SupportLogsPage: FC<SupportLogsPageProps> = ({ userRole = "var" }) 
       <NewTicketModal
         open={showNewTicket}
         onClose={() => setShowNewTicket(false)}
-        onSubmit={() => setShowNewTicket(false)}
+        onSubmit={async (ticket) => {
+          try {
+            await useSupportStore.getState().createTicket({
+              subject: ticket.issue,
+              description: `Client: ${ticket.client}\nDevice: ${ticket.device}\nAssignee: ${ticket.assignee}`,
+              priority: ticket.priority,
+            });
+          } catch {
+            // Falls back silently — ticket still closes
+          }
+          setShowNewTicket(false);
+        }}
       />
     </div>
   );

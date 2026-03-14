@@ -63,7 +63,10 @@ export const authService = {
   },
 
   async forgotPassword(email: string) {
-    const { error } = await adminClient.auth.resetPasswordForEmail(email);
+    const redirectTo = process.env.FRONTEND_URL || 'https://renewflow.io';
+    const { error } = await adminClient.auth.resetPasswordForEmail(email, {
+      redirectTo,
+    });
     if (error) throw new BadRequestError(error.message);
     return { message: 'Password reset email sent' };
   },

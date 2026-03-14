@@ -309,12 +309,10 @@ export interface ApiQuoteLineItem {
 
 export interface CreateQuoteBody {
   lineItems: {
-    assetId?: string;
-    brand: string;
-    model: string;
-    serial?: string;
+    assetId: string;
     coverageType: "tpm" | "oem";
-    quantity: number;
+    durationMonths: number;
+    quantity?: number;
   }[];
 }
 

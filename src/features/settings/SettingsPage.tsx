@@ -1,9 +1,11 @@
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { useTheme, FONT, MONO } from "@/theme";
 import { useLocale } from "@/i18n";
 import { Icon } from "@/components/icons";
 import { useAuthStore } from "@/stores";
+import { Badge } from "@/components/ui";
 import { ROLE_LABELS, type UserRole } from "@/types";
+import { users as usersApi, type ApiUser } from "@/services/gateway";
 
 // ─── Timezone options ───
 const TIMEZONES = [
@@ -83,6 +85,12 @@ const Field: FC<{ label: string; children: React.ReactNode; hint?: string }> = (
   );
 };
 
+const ROLE_COLORS: Record<string, string> = {
+  admin: "#2563EB",
+  member: "#3B82F6",
+  viewer: "#94A3B8",
+};
+
 export const SettingsPage: FC = () => {
   const { colors } = useTheme();
   const { t } = useLocale();
@@ -105,6 +113,28 @@ export const SettingsPage: FC = () => {
   const [weeklyDigest, setWeeklyDigest] = useState(false);
 
   const [saved, setSaved] = useState(false);
+
+  // ─── Team Management state ───
+  const [teamMembers, setTeamMembers] = useState<ApiUser[]>([]);
+  const [teamLoading, setTeamLoading] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("member");
+  const [inviting, setInviting] = useState(false);
+  const [inviteError, setInviteError] = useState("");
+  const [inviteSuccess, setInviteSuccess] = useState("");
+
+  // Load team members
+  useEffect(() => {
+    let cancelled = false;
+    setTeamLoading(true);
+    usersApi.list()
+      .then((res) => {
+        if (!cancelled) setTeamMembers(res.data || []);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setTeamLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
 
   const inputStyle: React.CSSProperties = {
     width: "100%",
@@ -130,16 +160,49 @@ export const SettingsPage: FC = () => {
   };
 
   const handleSave = () => {
-    // In production this would call an API to persist profile changes.
-    // For now, update local storage for the display name.
     if (user) {
       const updated = { ...user, name };
       localStorage.setItem("renewflow_user", JSON.stringify(updated));
-      // Update Zustand store directly via hydrate
       useAuthStore.getState().hydrate();
     }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleInvite = async () => {
+    if (!inviteEmail.trim()) return;
+    setInviting(true);
+    setInviteError("");
+    setInviteSuccess("");
+    try {
+      await usersApi.invite({ email: inviteEmail.trim(), role: inviteRole });
+      setInviteSuccess(`Invitation sent to ${inviteEmail}`);
+      setInviteEmail("");
+      // Refresh team list
+      const res = await usersApi.list();
+      setTeamMembers(res.data || []);
+    } catch (err) {
+      setInviteError((err as Error).message || "Failed to send invite");
+    }
+    setInviting(false);
+  };
+
+  const handleToggleActive = async (member: ApiUser) => {
+    try {
+      await usersApi.update(member.id, { active: !member.active });
+      setTeamMembers((prev) =>
+        prev.map((m) => (m.id === member.id ? { ...m, active: !m.active } : m))
+      );
+    } catch { /* ignore */ }
+  };
+
+  const handleChangeRole = async (memberId: string, newRole: string) => {
+    try {
+      await usersApi.update(memberId, { role: newRole });
+      setTeamMembers((prev) =>
+        prev.map((m) => (m.id === memberId ? { ...m, role: newRole } : m))
+      );
+    } catch { /* ignore */ }
   };
 
   return (
@@ -176,56 +239,24 @@ export const SettingsPage: FC = () => {
           boxShadow: colors.shadow,
         }}
       >
-        <h2
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: colors.text,
-            margin: "0 0 18px",
-          }}
-        >
+        <h2 style={{ fontSize: 14, fontWeight: 600, color: colors.text, margin: "0 0 18px" }}>
           {t.profileSettings}
         </h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 20px" }}>
           <Field label={t.displayName}>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              style={inputStyle}
-            />
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} style={inputStyle} />
           </Field>
-
           <Field label={t.emailAddress} hint="Contact support to change email">
-            <input
-              type="email"
-              value={email}
-              disabled
-              style={{ ...inputStyle, opacity: 0.6, cursor: "not-allowed" }}
-            />
+            <input type="email" value={email} disabled style={{ ...inputStyle, opacity: 0.6, cursor: "not-allowed" }} />
           </Field>
-
           <Field label={t.phone}>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+1 (555) 000-0000"
-              style={inputStyle}
-            />
+            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (555) 000-0000" style={inputStyle} />
           </Field>
-
           <Field label={t.timezone}>
-            <select
-              value={tz}
-              onChange={(e) => setTz(e.target.value)}
-              style={selectStyle}
-            >
+            <select value={tz} onChange={(e) => setTz(e.target.value)} style={selectStyle}>
               {TIMEZONES.map((zone) => (
-                <option key={zone} value={zone}>
-                  {zone.replace(/_/g, " ")}
-                </option>
+                <option key={zone} value={zone}>{zone.replace(/_/g, " ")}</option>
               ))}
             </select>
           </Field>
@@ -243,42 +274,173 @@ export const SettingsPage: FC = () => {
           boxShadow: colors.shadow,
         }}
       >
-        <h2
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: colors.text,
-            margin: "0 0 18px",
-          }}
-        >
+        <h2 style={{ fontSize: 14, fontWeight: 600, color: colors.text, margin: "0 0 18px" }}>
           {t.companyInfo}
         </h2>
-
         <Field label={t.companyName}>
-          <input
-            type="text"
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
-            placeholder="Acme Corp"
-            style={inputStyle}
-          />
+          <input type="text" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Acme Corp" style={inputStyle} />
         </Field>
-
         <Field label={t.emailSignature} hint="Appended to outbound emails">
           <textarea
             value={signature}
             onChange={(e) => setSignature(e.target.value)}
             placeholder={"Best regards,\nYour Name\nCompany Name"}
             rows={4}
-            style={{
-              ...inputStyle,
-              fontFamily: MONO,
-              fontSize: 12,
-              resize: "vertical",
-              minHeight: 80,
-            }}
+            style={{ ...inputStyle, fontFamily: MONO, fontSize: 12, resize: "vertical", minHeight: 80 }}
           />
         </Field>
+      </div>
+
+      {/* ─── Team Management Section ─── */}
+      <div
+        style={{
+          background: colors.card,
+          borderRadius: 14,
+          border: `1px solid ${colors.border}`,
+          padding: 24,
+          marginBottom: 20,
+          boxShadow: colors.shadow,
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+          <h2 style={{ fontSize: 14, fontWeight: 600, color: colors.text, margin: 0 }}>
+            Team Members
+          </h2>
+          <Badge color={colors.accent}>{teamMembers.length} members</Badge>
+        </div>
+
+        {/* Invite Form */}
+        <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          <input
+            type="email"
+            placeholder="teammate@company.com"
+            value={inviteEmail}
+            onChange={(e) => { setInviteEmail(e.target.value); setInviteError(""); setInviteSuccess(""); }}
+            style={{ ...inputStyle, flex: 1 }}
+          />
+          <select
+            value={inviteRole}
+            onChange={(e) => setInviteRole(e.target.value)}
+            style={{ ...selectStyle, width: 120, flex: "none" }}
+          >
+            <option value="admin">Admin</option>
+            <option value="member">Member</option>
+            <option value="viewer">Viewer</option>
+          </select>
+          <button
+            onClick={handleInvite}
+            disabled={inviting || !inviteEmail.trim()}
+            style={{
+              padding: "9px 16px",
+              borderRadius: 8,
+              border: "none",
+              background: colors.accent,
+              color: colors.onAccent,
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: inviting ? "not-allowed" : "pointer",
+              fontFamily: FONT,
+              whiteSpace: "nowrap",
+              opacity: inviting ? 0.7 : 1,
+            }}
+          >
+            {inviting ? "Sending..." : "Invite"}
+          </button>
+        </div>
+
+        {inviteError && (
+          <div style={{ fontSize: 12, color: colors.danger, marginBottom: 12, padding: "8px 12px", background: colors.dangerDim, borderRadius: 8 }}>
+            {inviteError}
+          </div>
+        )}
+        {inviteSuccess && (
+          <div style={{ fontSize: 12, color: colors.accent, marginBottom: 12, padding: "8px 12px", background: colors.accentDim, borderRadius: 8 }}>
+            {inviteSuccess}
+          </div>
+        )}
+
+        {/* Team Members List */}
+        {teamLoading ? (
+          <div style={{ padding: 20, textAlign: "center", color: colors.textMid, fontSize: 13 }}>
+            Loading team...
+          </div>
+        ) : teamMembers.length === 0 ? (
+          <div style={{ padding: 20, textAlign: "center", color: colors.textMid, fontSize: 13 }}>
+            No team members found. Invite your first teammate above.
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            {teamMembers.map((member) => (
+              <div
+                key={member.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "10px 12px",
+                  borderRadius: 8,
+                  background: member.id === user?.id ? colors.accentDim : "transparent",
+                  opacity: member.active ? 1 : 0.5,
+                }}
+              >
+                {/* Avatar */}
+                <div
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "50%",
+                    background: `linear-gradient(135deg, ${ROLE_COLORS[member.role] || "#94A3B8"}, ${ROLE_COLORS[member.role] || "#94A3B8"}88)`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: "#fff",
+                    flexShrink: 0,
+                  }}
+                >
+                  {(member.full_name || member.email).slice(0, 2).toUpperCase()}
+                </div>
+
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: colors.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {member.full_name || member.email}
+                    {member.id === user?.id && (
+                      <span style={{ fontSize: 10, color: colors.accent, marginLeft: 6 }}>(you)</span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: 11, color: colors.textMid }}>{member.email}</div>
+                </div>
+
+                {/* Role dropdown */}
+                {member.id !== user?.id ? (
+                  <select
+                    value={member.role}
+                    onChange={(e) => handleChangeRole(member.id, e.target.value)}
+                    style={{
+                      ...selectStyle,
+                      width: 100,
+                      padding: "5px 8px",
+                      fontSize: 11,
+                    }}
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="member">Member</option>
+                    <option value="viewer">Viewer</option>
+                  </select>
+                ) : (
+                  <Badge color={ROLE_COLORS[member.role] || colors.textMid}>{member.role}</Badge>
+                )}
+
+                {/* Active toggle */}
+                {member.id !== user?.id && (
+                  <Toggle on={member.active} onChange={() => handleToggleActive(member)} />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ─── Notifications Section ─── */}
@@ -292,36 +454,14 @@ export const SettingsPage: FC = () => {
           boxShadow: colors.shadow,
         }}
       >
-        <h2
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: colors.text,
-            margin: "0 0 18px",
-          }}
-        >
+        <h2 style={{ fontSize: 14, fontWeight: 600, color: colors.text, margin: "0 0 18px" }}>
           {t.notificationPrefs}
         </h2>
 
         {[
-          {
-            label: t.emailNotifications,
-            desc: "Receive email updates about your account activity",
-            on: emailNotifs,
-            set: setEmailNotifs,
-          },
-          {
-            label: t.renewalAlerts,
-            desc: "Get notified when warranties approach expiry dates",
-            on: renewalAlerts,
-            set: setRenewalAlerts,
-          },
-          {
-            label: t.weeklyDigest,
-            desc: "Summary of portfolio status every Monday",
-            on: weeklyDigest,
-            set: setWeeklyDigest,
-          },
+          { label: t.emailNotifications, desc: "Receive email updates about your account activity", on: emailNotifs, set: setEmailNotifs },
+          { label: t.renewalAlerts, desc: "Get notified when warranties approach expiry dates", on: renewalAlerts, set: setRenewalAlerts },
+          { label: t.weeklyDigest, desc: "Summary of portfolio status every Monday", on: weeklyDigest, set: setWeeklyDigest },
         ].map((pref) => (
           <div
             key={pref.label}
@@ -334,12 +474,8 @@ export const SettingsPage: FC = () => {
             }}
           >
             <div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: colors.text }}>
-                {pref.label}
-              </div>
-              <div style={{ fontSize: 11, color: colors.textDim, marginTop: 2 }}>
-                {pref.desc}
-              </div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: colors.text }}>{pref.label}</div>
+              <div style={{ fontSize: 11, color: colors.textDim, marginTop: 2 }}>{pref.desc}</div>
             </div>
             <Toggle on={pref.on} onChange={pref.set} />
           </div>

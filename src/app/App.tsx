@@ -29,6 +29,30 @@ import { PURCHASE_ORDERS } from "@/data/seeds";
 
 const LOCALE_STORAGE_KEY = "renewflow_locale";
 
+// Handle Supabase email verification callback
+// Supabase redirects with hash params: #access_token=...&refresh_token=...&type=signup
+function handleAuthCallback(): boolean {
+  const hash = window.location.hash;
+  if (!hash || !hash.includes("access_token")) return false;
+
+  const params = new URLSearchParams(hash.replace("#", "?"));
+  const accessToken = params.get("access_token");
+  const refreshToken = params.get("refresh_token");
+  const type = params.get("type");
+
+  if (accessToken && (type === "signup" || type === "recovery" || type === "magiclink")) {
+    // Store the token so the auth store can hydrate
+    localStorage.setItem("renewflow_token", accessToken);
+    if (refreshToken) {
+      localStorage.setItem("renewflow_refresh_token", refreshToken);
+    }
+    // Clean the URL hash
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    return true;
+  }
+  return false;
+}
+
 // ─── Role-based page access ───
 const ROLE_PAGES: Record<UserRole, PageId[]> = {
   var: ["dashboard", "inbox", "notifications", "quoter", "orders", "import", "support", "rewards", "pipeline", "settings", "how-it-works"],
@@ -73,8 +97,9 @@ export default function App() {
   const userRole: UserRole = user?.role || "var";
   const t = translations[locale];
 
-  // Hydrate auth from localStorage on mount
+  // Handle Supabase email verification / password recovery callbacks
   useEffect(() => {
+    handleAuthCallback();
     hydrate();
   }, [hydrate]);
 
