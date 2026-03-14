@@ -16,6 +16,7 @@ import { notificationRoutes } from './routes/notifications.routes.js';
 import { orgRoutes } from './routes/orgs.routes.js';
 import { userRoutes } from './routes/users.routes.js';
 import { chatRoutes } from './routes/chat.routes.js';
+import { entitlementRoutes } from './routes/entitlements.routes.js';
 import { startWarrantyAlertsCron } from './jobs/warranty-alerts.js';
 
 const app = Fastify({ logger: true, genReqId: () => randomUUID() });
@@ -38,6 +39,7 @@ await app.register(
     await api.register(orgRoutes, { prefix: '/orgs' });
     await api.register(userRoutes, { prefix: '/users' });
     await api.register(chatRoutes, { prefix: '/chat' });
+    await api.register(entitlementRoutes, { prefix: '/entitlements' });
   },
   { prefix: '/api/v1' }
 );
