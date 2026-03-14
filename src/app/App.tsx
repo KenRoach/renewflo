@@ -17,6 +17,7 @@ import { ChatPanel } from "@/features/chat";
 import { LoginPage } from "@/features/auth";
 import { ErrorBoundary, PageTransition } from "@/components/ui";
 import type { Asset, PageId, UserRole } from "@/types";
+import type { ApiOrder } from "@/services/gateway";
 import {
   useAssetStore,
   useAuthStore,
@@ -25,7 +26,6 @@ import {
   useNotificationsStore,
   useQuotesStore,
 } from "@/stores";
-import { PURCHASE_ORDERS } from "@/data/seeds";
 
 const LOCALE_STORAGE_KEY = "renewflow_locale";
 
@@ -88,6 +88,7 @@ export default function App() {
   const logout = useAuthStore((s) => s.logout);
 
   const loadOrders = useOrdersStore((s) => s.load);
+  const apiOrders = useOrdersStore((s) => s.orders);
   const ordersLoaded = useOrdersStore((s) => s.loaded);
   const loadSupport = useSupportStore((s) => s.load);
   const supportLoaded = useSupportStore((s) => s.loaded);
@@ -246,7 +247,16 @@ export default function App() {
             onClose={() => setChatOpen(false)}
             assets={assets}
             user={user}
-            orders={PURCHASE_ORDERS}
+            orders={apiOrders.map((o: ApiOrder) => ({
+              id: o.id.slice(0, 8),
+              client: "",
+              quoteRef: o.quote_id?.slice(0, 8) || "",
+              items: [],
+              status: o.status as import("@/types").POStatus,
+              total: o.total_amount,
+              created: new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+              updated: new Date(o.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+            }))}
             currentPage={page}
             locale={locale}
           />
