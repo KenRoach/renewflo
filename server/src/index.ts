@@ -16,6 +16,7 @@ import { notificationRoutes } from './routes/notifications.routes.js';
 import { orgRoutes } from './routes/orgs.routes.js';
 import { userRoutes } from './routes/users.routes.js';
 import { chatRoutes } from './routes/chat.routes.js';
+import { startWarrantyAlertsCron } from './jobs/warranty-alerts.js';
 
 const app = Fastify({ logger: true, genReqId: () => randomUUID() });
 
@@ -46,6 +47,7 @@ app.get('/health', async () => ({ status: 'ok' }));
 const start = async () => {
   try {
     await app.listen({ port: config.PORT, host: '0.0.0.0' });
+    startWarrantyAlertsCron();
   } catch (err) {
     app.log.error(err);
     process.exit(1);
