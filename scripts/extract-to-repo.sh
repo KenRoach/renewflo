@@ -83,7 +83,7 @@ if [[ $DRY == 1 ]]; then
   echo "  [dry-run] git subtree split --prefix=$FOLDER -b $SPLIT_BRANCH"
   echo "  [dry-run] git push $REMOTE_URL $SPLIT_BRANCH:main"
 else
-  git subtree split -q --prefix="$FOLDER" -b "$SPLIT_BRANCH"
+  git subtree split -q --prefix="$FOLDER" -b "$SPLIT_BRANCH" >/dev/null
   trap 'git branch -D "$SPLIT_BRANCH" >/dev/null 2>&1 || true' EXIT
   info "Pushing $(git rev-list --count "$SPLIT_BRANCH") commit(s) to $REMOTE_URL (main)"
   git push -q "$REMOTE_URL" "$SPLIT_BRANCH:main"
